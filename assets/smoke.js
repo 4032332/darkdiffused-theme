@@ -44,7 +44,7 @@
     'pointer-events:none','z-index:1','opacity:0','transition:opacity 3s ease',
   ].join(';');
   document.body.appendChild(canvas);
-  setTimeout(() => { canvas.style.opacity = '0.70'; }, 1000);
+  setTimeout(() => { canvas.style.opacity = '0.45'; }, 1000);
   const ctx = canvas.getContext('2d');
 
   let W = 0, H = 0;
@@ -66,7 +66,7 @@
   }));
 
   /* ── Smoke blobs ── */
-  const N   = 200;
+  const N   = 90;
   const bx  = new Float32Array(N);
   const by  = new Float32Array(N);
   const bvx = new Float32Array(N);
@@ -83,7 +83,7 @@
     bvy[i] = -(0.04 + Math.random() * 0.09);        // very slow upward drift
     ba[i]  = 0;
     bma[i] = 500 + Math.random() * 600;             // long life
-    br[i]  = 55  + Math.random() * 90;              // large blobs
+    br[i]  = 30  + Math.random() * 55;              // thinner wisps
     bsp[i] = 0.04 + Math.random() * 0.10;           // very slow
   }
 
@@ -149,7 +149,7 @@
       const r = br[i] + life * br[i] * 1.2;
 
       /* Alpha: gentle bell curve, very low peak */
-      const alpha = Math.sin(life * Math.PI) * 0.055;
+      const alpha = Math.sin(life * Math.PI) * 0.028;
       if (alpha < 0.003 || r < 2) continue;
 
       /* Warm near-white — smoke in amber light has a slight warmth */
