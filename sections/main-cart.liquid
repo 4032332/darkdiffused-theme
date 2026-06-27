@@ -1,0 +1,154 @@
+{% if cart.item_count == 0 %}
+  <section class="section-pad" style="text-align: center; min-height: 60vh; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+    <div class="container">
+      <div class="eyebrow" style="justify-content: center;">Your Bag</div>
+      <h1 class="display-md" style="margin-bottom: var(--space-md);">Your bag is <em class="brass">empty.</em></h1>
+      <p class="italic-sub" style="margin-bottom: var(--space-lg);">Every room deserves a statement. Start here.</p>
+      <a href="/collections/all" class="btn-brass">Explore the Collection</a>
+    </div>
+  </section>
+
+{% else %}
+  <section class="section-pad">
+    <div class="container">
+      <div class="eyebrow">Your Bag ({{ cart.item_count }} {% if cart.item_count == 1 %}item{% else %}items{% endif %})</div>
+      <h1 class="display-md" style="margin-bottom: var(--space-xl);">Review <em class="brass">Order</em></h1>
+
+      <div style="display: grid; grid-template-columns: 1fr 380px; gap: var(--space-xl); align-items: start;">
+
+        <!-- Line items -->
+        <div>
+          <form action="/cart" method="post" id="cart-form">
+            <table class="cart-table">
+              <thead>
+                <tr>
+                  <th colspan="2">Product</th>
+                  <th>Qty</th>
+                  <th style="text-align: right;">Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for item in cart.items %}
+                  <tr>
+                    <td style="width: 100px; padding-right: 20px;">
+                      <a href="{{ item.url }}">
+                        <img
+                          class="cart-item__image"
+                          src="{{ item.image | image_url: width: 160 }}"
+                          alt="{{ item.image.alt | escape | default: item.title }}"
+                          width="80" height="80" loading="lazy"
+                        >
+                      </a>
+                    </td>
+                    <td>
+                      <a href="{{ item.url }}" style="text-decoration: none;">
+                        <span class="cart-item__name">{{ item.product.title }}</span>
+                      </a>
+                      {% unless item.variant.title == 'Default Title' %}
+                        <p class="cart-item__variant">{{ item.variant.title }}</p>
+                      {% endunless %}
+                      <p style="font-family: var(--font-ui); font-size: 11px; color: var(--stone); margin-top: 4px;">{{ item.price | money }} each</p>
+                      <a href="/cart/change?id={{ item.key }}&quantity=0"
+                         style="font-family: var(--font-ui); font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); text-decoration: none; margin-top: 8px; display: inline-block; transition: color 0.3s;"
+                         onmouseover="this.style.color='var(--fog)'"
+                         onmouseout="this.style.color='var(--muted)'">
+                        Remove
+                      </a>
+                    </td>
+                    <td>
+                      <div style="display: flex; align-items: center; gap: 0; border: 1px solid rgba(212,174,80,0.2); width: fit-content;">
+                        <a href="/cart/change?id={{ item.key }}&quantity={{ item.quantity | minus: 1 }}"
+                           style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; color: var(--fog); text-decoration: none; font-size: 16px;">−</a>
+                        <span style="width: 40px; text-align: center; font-family: var(--font-body); font-size: 16px; color: var(--cream);">{{ item.quantity }}</span>
+                        <a href="/cart/change?id={{ item.key }}&quantity={{ item.quantity | plus: 1 }}"
+                           style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; color: var(--fog); text-decoration: none; font-size: 16px;">+</a>
+                      </div>
+                    </td>
+                    <td style="text-align: right;">
+                      <span style="font-family: var(--font-body); font-size: 18px; color: var(--cream);">{{ item.line_price | money }}</span>
+                    </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+
+            {% if cart.cart_level_discount_applications.size > 0 %}
+              <div style="margin-top: var(--space-md); padding: var(--space-sm); border: 1px solid rgba(212,174,80,0.15); color: var(--brass-light); font-family: var(--font-ui); font-size: 12px; letter-spacing: 0.08em;">
+                {% for discount in cart.cart_level_discount_applications %}
+                  Discount applied: {{ discount.title }} ({{ discount.total_allocated_amount | money }} off)
+                {% endfor %}
+              </div>
+            {% endif %}
+          </form>
+
+          <div style="margin-top: var(--space-lg);">
+            <a href="/collections/all" class="btn-ghost">← Continue Shopping</a>
+          </div>
+        </div>
+
+        <!-- Summary -->
+        <div class="cart-summary">
+          <h2 style="font-family: var(--font-display); font-size: 22px; color: var(--cream); margin-bottom: var(--space-md); border-bottom: 1px solid rgba(212,174,80,0.1); padding-bottom: var(--space-md);">
+            Order Summary
+          </h2>
+
+          <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: var(--space-md);">
+            <div style="display: flex; justify-content: space-between; font-size: 14px; color: var(--fog);">
+              <span>Subtotal</span>
+              <span>{{ cart.total_price | money }}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; font-size: 13px; color: var(--stone); font-style: italic;">
+              <span>Shipping</span>
+              <span>Calculated at checkout</span>
+            </div>
+          </div>
+
+          <div style="border-top: 1px solid rgba(212,174,80,0.1); padding-top: var(--space-md); margin-bottom: var(--space-md); display: flex; justify-content: space-between;">
+            <span style="font-family: var(--font-display); font-size: 18px; color: var(--cream);">Total</span>
+            <span style="font-family: var(--font-body); font-size: 22px; color: var(--cream);">{{ cart.total_price | money }}</span>
+          </div>
+
+          <!-- Discount code -->
+          <form action="/cart" method="post" style="margin-bottom: var(--space-md);">
+            <div style="display: flex; gap: 8px;">
+              <input type="text" name="discount"
+                placeholder="Discount code"
+                style="
+                  flex: 1;
+                  padding: 10px 14px;
+                  background: rgba(255,255,255,0.04);
+                  border: 1px solid rgba(212,174,80,0.2);
+                  color: var(--cream);
+                  font-family: var(--font-ui);
+                  font-size: 12px;
+                  letter-spacing: 0.06em;
+                  outline: none;
+                "
+              >
+              <button type="submit" name="update" class="btn-ghost" style="white-space: nowrap; padding: 10px 16px;">Apply</button>
+            </div>
+          </form>
+
+          <form action="/checkout" method="post">
+            <button type="submit" class="btn-brass" style="width: 100%; justify-content: center; font-size: 11px;">
+              Proceed to Checkout
+            </button>
+          </form>
+
+          <p style="font-family: var(--font-ui); font-size: 10px; letter-spacing: 0.08em; color: var(--muted); text-align: center; margin-top: var(--space-sm);">
+            Secure checkout · SSL encrypted
+          </p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+{% endif %}
+
+{% schema %}
+{
+  "name": "Cart",
+  "settings": [],
+  "presets": [{ "name": "Cart" }]
+}
+{% endschema %}

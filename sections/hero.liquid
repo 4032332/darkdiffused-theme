@@ -1,0 +1,452 @@
+<style>
+.hero {
+  min-height: 92vh;
+  display: grid;
+  grid-template-columns: 55% 45%;
+  overflow: hidden;
+  position: relative;
+}
+
+.hero__left {
+  padding: 80px var(--gutter) 80px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: relative;
+  z-index: 1;
+  background-color: #0E0A04;
+  background-image:
+    repeating-linear-gradient(
+      90.5deg,
+      transparent 0px, transparent 6px,
+      rgba(60,35,10,0.12) 6px, rgba(60,35,10,0.12) 7px
+    ),
+    repeating-linear-gradient(
+      89.5deg,
+      transparent 0px, transparent 20px,
+      rgba(40,22,6,0.18) 20px, rgba(40,22,6,0.18) 21px
+    ),
+    linear-gradient(180deg, #141008 0%, #0E0A04 40%, #120E06 100%);
+}
+
+/* Wainscoting border */
+.hero__wainscot {
+  position: absolute;
+  top: var(--space-lg); bottom: var(--space-lg);
+  left: var(--space-lg); right: var(--space-lg);
+  border: 1px solid rgba(212,174,80,0.07);
+  pointer-events: none;
+}
+
+.hero__wainscot::before {
+  content: '';
+  position: absolute;
+  top: 8px; bottom: 8px; left: 8px; right: 8px;
+  border: 1px solid rgba(212,174,80,0.04);
+}
+
+/* Filament lamp effect */
+.hero__cord {
+  position: absolute;
+  top: 0;
+  left: calc(50% + 60px);
+  width: 1px;
+  height: 140px;
+  background: linear-gradient(to bottom, rgba(80,60,20,0.4), rgba(212,174,80,0.35));
+}
+
+.hero__cord::after {
+  content: '';
+  position: absolute;
+  bottom: -4px; left: 50%; transform: translateX(-50%);
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at 35% 30%,
+    var(--brass-gleam) 0%,
+    var(--brass-light) 25%,
+    var(--brass) 55%,
+    var(--brass-dark) 100%
+  );
+  box-shadow: 0 0 24px rgba(212,174,80,0.55), 0 2px 8px rgba(0,0,0,0.8);
+}
+
+.hero__lamp-glow {
+  position: absolute;
+  top: -80px; left: calc(50% + 30px);
+  width: 320px; height: 320px;
+  border-radius: 50%;
+  background: radial-gradient(ellipse,
+    rgba(255,190,60,0.18) 0%,
+    rgba(200,140,40,0.07) 40%,
+    transparent 70%
+  );
+  filter: blur(22px);
+  pointer-events: none;
+}
+
+.hero__headline {
+  position: relative;
+  z-index: 1;
+  margin-bottom: 20px;
+}
+
+.hero__sub {
+  position: relative;
+  z-index: 1;
+  max-width: 420px;
+  margin-bottom: var(--space-lg);
+}
+
+.hero__btns {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  gap: var(--space-sm);
+  flex-wrap: wrap;
+}
+
+/* Right panel — leather */
+.hero__right {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background-color: #200E06;
+  background-image:
+    radial-gradient(ellipse 2px 1px at 25% 45%, rgba(255,160,60,0.04) 0%, transparent 100%),
+    radial-gradient(ellipse 1px 2px at 75% 25%, rgba(255,160,60,0.03) 0%, transparent 100%),
+    repeating-linear-gradient(
+      43deg,
+      transparent 0px, transparent 8px,
+      rgba(180,80,20,0.03) 8px, rgba(180,80,20,0.03) 9px
+    ),
+    repeating-linear-gradient(
+      -43deg,
+      transparent 0px, transparent 8px,
+      rgba(80,30,5,0.04) 8px, rgba(80,30,5,0.04) 9px
+    ),
+    linear-gradient(160deg, #2A1208 0%, #1A0C06 50%, #200E08 100%);
+}
+
+/* Brass border on leather panel */
+.hero__right::after {
+  content: '';
+  position: absolute;
+  inset: 20px;
+  border: 1px solid rgba(212,174,80,0.1);
+  pointer-events: none;
+}
+
+.hero__right-glow {
+  position: absolute;
+  top: 15%; right: 10%;
+  width: 280px; height: 280px;
+  border-radius: 50%;
+  background: radial-gradient(ellipse,
+    rgba(255,200,80,0.13) 0%,
+    rgba(200,130,40,0.05) 45%,
+    transparent 70%
+  );
+  filter: blur(24px);
+  pointer-events: none;
+}
+
+/* Product shelf display */
+.hero__products {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.hero__shelf-items {
+  display: flex;
+  gap: 40px;
+  align-items: flex-end;
+  padding-bottom: 0;
+}
+
+.hero__shelf-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.hero__shelf-item-label {
+  font-family: var(--font-ui);
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  margin-top: 12px;
+}
+
+/* Polished wood shelf */
+.hero__shelf {
+  width: 260px;
+  height: 9px;
+  background: linear-gradient(180deg,
+    var(--wood-light) 0%,
+    var(--wood-grain) 40%,
+    var(--wood-dark) 100%
+  );
+  box-shadow:
+    0 4px 20px rgba(0,0,0,0.8),
+    inset 0 1px 0 rgba(255,200,100,0.1);
+  margin-top: -1px;
+  position: relative;
+}
+
+/* Brass shelf brackets */
+.hero__shelf::before, .hero__shelf::after {
+  content: '';
+  position: absolute;
+  bottom: -16px;
+  width: 6px; height: 16px;
+  background: linear-gradient(180deg, var(--brass-light), var(--brass-dark));
+}
+.hero__shelf::before { left: 16px; }
+.hero__shelf::after  { right: 16px; }
+
+/* Mist animation */
+.hero__mist {
+  width: 56px; height: 26px;
+  border-radius: 50%;
+  filter: blur(8px);
+  animation: mistFloat 3.5s ease-in-out infinite;
+  margin-bottom: -6px;
+}
+
+.hero__mist--amber { background: radial-gradient(ellipse, rgba(212,174,80,0.7) 0%, transparent 100%); }
+.hero__mist--warm  { background: radial-gradient(ellipse, rgba(184,115,51,0.65) 0%, transparent 100%); }
+.hero__mist--pale  { background: radial-gradient(ellipse, rgba(220,210,190,0.5) 0%, transparent 100%); }
+
+@keyframes mistFloat {
+  0%,100% { opacity: 0.3; transform: scaleX(0.9) translateY(0); }
+  50%      { opacity: 0.65; transform: scaleX(1.15) translateY(-6px); }
+}
+
+/* Product silhouettes (CSS-only) */
+.diff-cylinder {
+  width: 54px; height: 150px;
+  background: linear-gradient(135deg, #2C2825 0%, #111 55%, #1E1A18 100%);
+  border-radius: 3px 3px 6px 6px;
+  position: relative;
+  box-shadow: inset -5px 0 10px rgba(0,0,0,0.6), 3px 6px 28px rgba(0,0,0,0.8);
+}
+.diff-cylinder::before {
+  content: '';
+  position: absolute;
+  top: -18px; left: 50%; transform: translateX(-50%);
+  width: 16px; height: 18px;
+  background: linear-gradient(180deg, var(--brass-gleam) 0%, var(--brass-light) 30%, var(--brass) 60%, var(--brass-dark) 100%);
+  border-radius: 3px 3px 1px 1px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.2);
+}
+.diff-cylinder::after {
+  content: '';
+  position: absolute;
+  top: 28px; left: 0; right: 0; height: 3px;
+  background: linear-gradient(90deg,
+    transparent 5%, var(--brass-dark) 15%, var(--brass-light) 40%,
+    var(--brass-shine) 50%, var(--brass-light) 60%, var(--brass-dark) 85%, transparent 95%
+  );
+}
+
+.diff-dragon {
+  width: 90px; height: 120px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.diff-dragon__body {
+  width: 52px; height: 76px;
+  background: linear-gradient(155deg, #3D2B1A 0%, #1E1208 70%);
+  border-radius: 30% 30% 40% 40%;
+  box-shadow: 3px 6px 20px rgba(0,0,0,0.8);
+}
+.diff-dragon__head {
+  width: 46px; height: 38px;
+  background: linear-gradient(155deg, #4A3020 0%, #2A1A0C 100%);
+  border-radius: 40% 60% 28% 28%;
+  margin-bottom: -3px;
+  position: relative;
+}
+.diff-dragon__head::before, .diff-dragon__head::after {
+  content: '';
+  position: absolute;
+  top: -10px; width: 7px; height: 11px;
+  background: linear-gradient(to top, #2A1A08, #3A2810);
+  border-radius: 2px 2px 0 0;
+}
+.diff-dragon__head::before { left: 9px; }
+.diff-dragon__head::after  { right: 10px; }
+.diff-dragon__wing-l, .diff-dragon__wing-r {
+  position: absolute; top: 38px;
+  width: 24px; height: 44px;
+}
+.diff-dragon__wing-l {
+  left: 0;
+  background: linear-gradient(120deg, #2A1A0E 0%, #1A0E06 100%);
+  border-radius: 60% 10% 20% 10%;
+  transform: rotate(-22deg) translateX(-8px);
+}
+.diff-dragon__wing-r {
+  right: 0;
+  background: linear-gradient(240deg, #2A1A0E 0%, #1A0E06 100%);
+  border-radius: 10% 60% 10% 20%;
+  transform: rotate(22deg) translateX(8px);
+}
+
+.diff-ceramic {
+  width: 62px; height: 102px;
+  background: linear-gradient(145deg, #EDE4D8 0%, #D8CCBE 35%, #C8BFB0 60%, #BEB5A5 100%);
+  border-radius: 50% 50% 40% 40% / 28% 28% 48% 48%;
+  position: relative;
+  box-shadow: inset -8px -6px 18px rgba(0,0,0,0.18), inset 4px 4px 12px rgba(255,255,255,0.22), 4px 10px 30px rgba(0,0,0,0.75);
+}
+.diff-ceramic::before {
+  content: '';
+  position: absolute;
+  top: -12px; left: 50%; transform: translateX(-50%);
+  width: 17px; height: 12px;
+  background: linear-gradient(to top, #C2B8A8, #DAD4CB);
+  border-radius: 50% 50% 20% 20%;
+}
+.diff-ceramic::after {
+  content: '';
+  position: absolute;
+  top: 16%; left: 15%; width: 30%; height: 20%;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.26);
+  filter: blur(4px);
+}
+
+@media (max-width: 900px) {
+  .hero { grid-template-columns: 1fr; min-height: auto; }
+  .hero__right { min-height: 50vh; }
+  .hero__cord { display: none; }
+}
+</style>
+
+<section class="hero">
+  <div class="hero__left">
+    <div class="hero__wainscot" aria-hidden="true"></div>
+    <div class="hero__cord" aria-hidden="true"></div>
+    <div class="hero__lamp-glow" aria-hidden="true"></div>
+
+    <div class="eyebrow">Est. 2025 · Australia</div>
+
+    <div class="hero__headline">
+      <h1 class="display-xl">
+        {{ section.settings.heading | default: 'Own the' }}<br>
+        <em class="brass">{{ section.settings.heading_em | default: 'atmosphere.' }}</em>
+      </h1>
+    </div>
+
+    <p class="italic-sub hero__sub">
+      {{ section.settings.subheading | default: 'Premium diffusers and masculine fragrances for men who understand that the right scent is the quietest power move in any room.' }}
+    </p>
+
+    <div class="hero__btns">
+      <a href="{{ section.settings.cta_url | default: '/collections' }}" class="btn-brass">
+        {{ section.settings.cta_label | default: 'Explore the Collection' }}
+      </a>
+      {% if section.settings.secondary_url != blank %}
+        <a href="{{ section.settings.secondary_url }}" class="btn-ghost">
+          {{ section.settings.secondary_label | default: 'Our Story' }}
+        </a>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="hero__right" aria-hidden="true">
+    <div class="hero__right-glow"></div>
+    <div class="hero__products">
+      <div class="hero__shelf-items">
+
+        <!-- Range I — Cylinder diffuser -->
+        <a href="/collections/the-elevated-man" class="hero__shelf-item" aria-label="The Elevated Man range">
+          <div class="hero__mist hero__mist--amber" style="animation-delay:0s"></div>
+          <div class="diff-cylinder"></div>
+          <span class="hero__shelf-item-label" style="color: var(--range1)">I</span>
+        </a>
+
+        <!-- Range II — Dragon diffuser -->
+        <a href="/collections/man-child" class="hero__shelf-item" style="margin-bottom: 12px;" aria-label="The Man Child range">
+          <div class="hero__mist hero__mist--warm" style="animation-delay:0.9s; width:68px"></div>
+          <div class="diff-dragon">
+            <div class="diff-dragon__wing-l"></div>
+            <div class="diff-dragon__wing-r"></div>
+            <div class="diff-dragon__head"></div>
+            <div class="diff-dragon__body"></div>
+          </div>
+          <span class="hero__shelf-item-label" style="color: var(--range2)">II</span>
+        </a>
+
+        <!-- Range III — Ceramic diffuser -->
+        <a href="/collections/happy-wife-happy-life" class="hero__shelf-item" aria-label="Happy Wife Happy Life range">
+          <div class="hero__mist hero__mist--pale" style="animation-delay:1.7s"></div>
+          <div class="diff-ceramic"></div>
+          <span class="hero__shelf-item-label" style="color: var(--range3)">III</span>
+        </a>
+
+      </div>
+      <div class="hero__shelf"></div>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Hero",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading first line",
+      "default": "Own the"
+    },
+    {
+      "type": "text",
+      "id": "heading_em",
+      "label": "Heading emphasis (italic brass)",
+      "default": "atmosphere."
+    },
+    {
+      "type": "textarea",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Premium diffusers and masculine fragrances for men who understand that the right scent is the quietest power move in any room."
+    },
+    {
+      "type": "text",
+      "id": "cta_label",
+      "label": "Primary button label",
+      "default": "Explore the Collection"
+    },
+    {
+      "type": "url",
+      "id": "cta_url",
+      "label": "Primary button URL"
+    },
+    {
+      "type": "text",
+      "id": "secondary_label",
+      "label": "Secondary button label",
+      "default": "Our Story"
+    },
+    {
+      "type": "url",
+      "id": "secondary_url",
+      "label": "Secondary button URL"
+    }
+  ],
+  "presets": [{ "name": "Hero" }]
+}
+{% endschema %}

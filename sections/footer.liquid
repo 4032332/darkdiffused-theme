@@ -1,0 +1,115 @@
+<footer class="site-footer" role="contentinfo">
+  <div class="site-footer__grid">
+
+    <div>
+      <div class="site-footer__brand-name">Dark & <span>Diffused</span></div>
+      <p class="site-footer__tagline">{{ section.settings.tagline | default: 'Premium diffusers and masculine fragrances. Built in Australia, obsessed over everywhere.' }}</p>
+    </div>
+
+    <div class="site-footer__col">
+      <h4>{{ section.settings.col2_heading | default: 'The Ranges' }}</h4>
+      <ul>
+        {% if linklists[section.settings.col2_menu] != blank %}
+          {% for link in linklists[section.settings.col2_menu].links %}
+            <li><a href="{{ link.url }}">{{ link.title }}</a></li>
+          {% endfor %}
+        {% else %}
+          <li><a href="/collections/the-elevated-man">The Elevated Man</a></li>
+          <li><a href="/collections/man-child">The Man Child</a></li>
+          <li><a href="/collections/happy-wife-happy-life">Happy Wife, Happy Life</a></li>
+          <li><a href="/collections/all">Gift Sets</a></li>
+        {% endif %}
+      </ul>
+    </div>
+
+    <div class="site-footer__col">
+      <h4>{{ section.settings.col3_heading | default: 'The Brand' }}</h4>
+      <ul>
+        {% if linklists[section.settings.col3_menu] != blank %}
+          {% for link in linklists[section.settings.col3_menu].links %}
+            <li><a href="{{ link.url }}">{{ link.title }}</a></li>
+          {% endfor %}
+        {% else %}
+          <li><a href="/pages/our-story">Our Story</a></li>
+          <li><a href="/blogs/journal">The Journal</a></li>
+          <li><a href="/pages/wholesale">Wholesale</a></li>
+        {% endif %}
+      </ul>
+    </div>
+
+    <div class="site-footer__col">
+      <h4>{{ section.settings.col4_heading | default: 'Support' }}</h4>
+      <ul>
+        {% if linklists[section.settings.col4_menu] != blank %}
+          {% for link in linklists[section.settings.col4_menu].links %}
+            <li><a href="{{ link.url }}">{{ link.title }}</a></li>
+          {% endfor %}
+        {% else %}
+          <li><a href="/policies/shipping-policy">Shipping & Returns</a></li>
+          <li><a href="/pages/faq">FAQ</a></li>
+          <li><a href="/pages/contact">Contact</a></li>
+        {% endif %}
+      </ul>
+    </div>
+
+  </div>
+
+  <div class="site-footer__bottom">
+    <span class="site-footer__copy">
+      &copy; {{ 'now' | date: '%Y' }} {{ shop.name }}. All rights reserved.
+    </span>
+    <div class="site-footer__legal">
+      <a href="{{ shop.privacy_policy.url }}">Privacy</a>
+      <a href="{{ shop.terms_of_service.url }}">Terms</a>
+      <a href="{{ shop.refund_policy.url }}">Refund Policy</a>
+    </div>
+  </div>
+</footer>
+
+{% schema %}
+{
+  "name": "Footer",
+  "settings": [
+    {
+      "type": "textarea",
+      "id": "tagline",
+      "label": "Brand tagline",
+      "default": "Premium diffusers and masculine fragrances. Built in Australia, obsessed over everywhere."
+    },
+    {
+      "type": "text",
+      "id": "col2_heading",
+      "label": "Column 2 heading",
+      "default": "The Ranges"
+    },
+    {
+      "type": "link_list",
+      "id": "col2_menu",
+      "label": "Column 2 menu"
+    },
+    {
+      "type": "text",
+      "id": "col3_heading",
+      "label": "Column 3 heading",
+      "default": "The Brand"
+    },
+    {
+      "type": "link_list",
+      "id": "col3_menu",
+      "label": "Column 3 menu"
+    },
+    {
+      "type": "text",
+      "id": "col4_heading",
+      "label": "Column 4 heading",
+      "default": "Support"
+    },
+    {
+      "type": "link_list",
+      "id": "col4_menu",
+      "label": "Column 4 menu"
+    }
+  ],
+  "presets": [{ "name": "Footer" }]
+}
+{% endschema %}

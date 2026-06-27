@@ -1,0 +1,48 @@
+{
+  "sections": {
+    "hero": {
+      "type": "hero",
+      "settings": {
+        "heading": "Own the",
+        "heading_em": "atmosphere.",
+        "subheading": "Premium diffusers and masculine fragrances for men who understand that the right scent is the quietest power move in any room.",
+        "cta_label": "Explore the Collection",
+        "cta_url": "/collections/all",
+        "secondary_label": "Our Story",
+        "secondary_url": "/pages/our-story"
+      }
+    },
+    "range_nav": {
+      "type": "range-nav",
+      "settings": {
+        "range1_name": "The Elevated Man",
+        "range1_sub": "Own the room.",
+        "range1_desc": "Dark, sophisticated diffusers with scents that command attention. Oud, leather, cedarwood. For the man who curates his environment with the same precision he applies to everything else.",
+        "range1_cta": "Enter Range I",
+        "range1_url": "/collections/the-elevated-man",
+        "range2_name": "The Man Child",
+        "range2_sub": "Keep it ridiculous.",
+        "range2_desc": "Rocket ships, cannons, volcanoes, and armoured trains. Because adulting is entirely optional and your space should make you grin.",
+        "range2_cta": "Enter Range II",
+        "range2_url": "/collections/man-child",
+        "range3_name": "Happy Wife, Happy Life",
+        "range3_sub": "Choose your battles.",
+        "range3_desc": "Gallery-worthy diffusers and neutral, sophisticated scents. The fragrance both of you actually want in the house — the compromise that doesn't feel like one.",
+        "range3_cta": "Enter Range III",
+        "range3_url": "/collections/happy-wife-happy-life"
+      }
+    },
+    "featured_products": {
+      "type": "featured-products",
+      "settings": {
+        "eyebrow": "Most Wanted",
+        "heading": "Best",
+        "heading_em": "sellers",
+        "product_count": 4,
+        "cta_label": "View All Products",
+        "cta_url": "/collections/all"
+      }
+    }
+  },
+  "order": ["hero", "range_nav", "featured_products"]
+}

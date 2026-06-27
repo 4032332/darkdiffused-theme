@@ -1,0 +1,77 @@
+{% paginate collection.products by section.settings.products_per_page %}
+
+<div class="breadcrumb">
+  <span><a href="/">Home</a></span>
+  <span>{{ collection.title }}</span>
+</div>
+
+<div class="collection-header">
+  <div class="collection-header__content">
+    <div class="eyebrow">
+      {% assign range_num = '' %}
+      {% for tag in collection.all_tags %}
+        {% if tag contains 'range:' %}
+          {% assign range_num = tag | remove: 'range:' | strip %}
+        {% endif %}
+      {% endfor %}
+      {% if range_num != blank %}Range {{ range_num }} ·{% endif %}
+      {{ collection.products_count }} products
+    </div>
+    <h1 class="display-lg">{{ collection.title }}</h1>
+    {% if collection.description != blank %}
+      <p class="italic-sub">{{ collection.description }}</p>
+    {% endif %}
+  </div>
+</div>
+
+<hr class="brass-rule">
+
+<section class="section-pad">
+  <div class="container">
+    <div class="product-grid product-grid--3">
+      {% for product in collection.products %}
+        {% render 'product-card', product: product %}
+      {% else %}
+        <p style="color: var(--fog); font-style: italic; grid-column: 1/-1; padding: var(--space-xl) 0;">No products found in this collection.</p>
+      {% endfor %}
+    </div>
+
+    {% if paginate.pages > 1 %}
+      <div class="pagination" style="display: flex; justify-content: center; gap: var(--space-sm); margin-top: var(--space-xl);">
+        {% if paginate.previous %}
+          <a href="{{ paginate.previous.url }}" class="btn-ghost" style="text-decoration: none;">&larr; Previous</a>
+        {% endif %}
+        {% for part in paginate.parts %}
+          {% if part.is_link %}
+            <a href="{{ part.url }}" class="btn-ghost" style="text-decoration: none; min-width: 44px; justify-content: center;">{{ part.title }}</a>
+          {% else %}
+            <span style="display: inline-flex; align-items: center; padding: 13px 16px; color: var(--brass-light); border: 1px solid var(--brass);">{{ part.title }}</span>
+          {% endif %}
+        {% endfor %}
+        {% if paginate.next %}
+          <a href="{{ paginate.next.url }}" class="btn-ghost" style="text-decoration: none;">Next &rarr;</a>
+        {% endif %}
+      </div>
+    {% endif %}
+  </div>
+</section>
+
+{% endpaginate %}
+
+{% schema %}
+{
+  "name": "Collection Products",
+  "settings": [
+    {
+      "type": "range",
+      "id": "products_per_page",
+      "label": "Products per page",
+      "min": 6,
+      "max": 24,
+      "step": 3,
+      "default": 12
+    }
+  ],
+  "presets": [{ "name": "Collection Products" }]
+}
+{% endschema %}

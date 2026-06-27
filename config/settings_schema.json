@@ -1,0 +1,50 @@
+[
+  {
+    "name": "theme_info",
+    "theme_name": "Dark & Diffused",
+    "theme_version": "1.0.0",
+    "theme_author": "Dark & Diffused",
+    "theme_documentation_url": "https://darkdiffused.myshopify.com",
+    "theme_support_url": "https://darkdiffused.myshopify.com"
+  },
+  {
+    "name": "Colours",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Brand colours are fixed in the design system. Contact your developer to customise."
+      }
+    ]
+  },
+  {
+    "name": "Favicon",
+    "settings": [
+      {
+        "type": "image_picker",
+        "id": "favicon",
+        "label": "Favicon image",
+        "info": "32 x 32px PNG recommended"
+      }
+    ]
+  },
+  {
+    "name": "Social media",
+    "settings": [
+      {
+        "type": "url",
+        "id": "social_instagram",
+        "label": "Instagram URL"
+      },
+      {
+        "type": "url",
+        "id": "social_facebook",
+        "label": "Facebook URL"
+      },
+      {
+        "type": "url",
+        "id": "social_tiktok",
+        "label": "TikTok URL"
+      }
+    ]
+  }
+]

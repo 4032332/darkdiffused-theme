@@ -1,0 +1,77 @@
+<header class="site-header" role="banner">
+  <div class="site-header__inner">
+    <a href="/" class="site-header__logo" aria-label="{{ shop.name }}">
+      Dark & <span>Diffused</span>
+    </a>
+
+    <nav class="site-nav" aria-label="Main navigation">
+      {% for link in section.settings.menu.links %}
+        <div class="site-nav__item">
+          <a href="{{ link.url }}"
+             {% if link.active %}class="active" aria-current="page"{% endif %}>
+            {{ link.title }}
+          </a>
+        </div>
+      {% endfor %}
+    </nav>
+
+    <div class="site-header__actions">
+      {% if section.settings.show_search %}
+        <a href="/search" aria-label="Search" class="header-cart" style="padding: 8px 14px;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+          </svg>
+        </a>
+      {% endif %}
+
+      {% if shop.customer_accounts_enabled %}
+        <a href="/account" aria-label="Account" class="header-cart" style="padding: 8px 14px; display: none;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+            <circle cx="12" cy="7" r="4"/>
+          </svg>
+        </a>
+      {% endif %}
+
+      <a href="/cart" class="header-cart" aria-label="Cart">
+        Bag
+        <span class="cart-count">{{ cart.item_count }}</span>
+      </a>
+
+      <button class="header-menu-toggle" aria-label="Open menu" aria-expanded="false">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- Mobile Nav Overlay -->
+<nav class="mobile-nav" aria-label="Mobile navigation">
+  <button class="mobile-nav__close" aria-label="Close menu">✕</button>
+  {% for link in section.settings.menu.links %}
+    <a href="{{ link.url }}">{{ link.title }}</a>
+  {% endfor %}
+</nav>
+
+{% schema %}
+{
+  "name": "Header",
+  "settings": [
+    {
+      "type": "link_list",
+      "id": "menu",
+      "label": "Main menu",
+      "default": "main-menu"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_search",
+      "label": "Show search icon",
+      "default": true
+    }
+  ],
+  "presets": [{ "name": "Header" }]
+}
+{% endschema %}

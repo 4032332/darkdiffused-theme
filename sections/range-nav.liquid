@@ -1,0 +1,247 @@
+<style>
+.range-nav {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  background: var(--wood-dark);
+  border-top: 1px solid rgba(212,174,80,0.15);
+  border-bottom: 1px solid rgba(212,174,80,0.15);
+}
+
+.range-card {
+  padding: var(--space-lg) var(--space-lg);
+  cursor: pointer;
+  position: relative;
+  transition: background 0.4s ease;
+  border-right: 1px solid rgba(212,174,80,0.1);
+  text-decoration: none;
+  display: block;
+  background-image:
+    repeating-linear-gradient(
+      90.5deg,
+      transparent 0px, transparent 5px,
+      rgba(60,30,8,0.1) 5px, rgba(60,30,8,0.1) 6px
+    ),
+    linear-gradient(160deg, #1A1008 0%, #120C04 100%);
+}
+
+.range-card:last-child { border-right: none; }
+
+.range-card:hover {
+  background-image:
+    repeating-linear-gradient(
+      90.5deg,
+      transparent 0px, transparent 5px,
+      rgba(60,30,8,0.1) 5px, rgba(60,30,8,0.1) 6px
+    ),
+    linear-gradient(160deg, #221408 0%, #1A1006 100%);
+}
+
+/* Brass accent bar at top, reveals on hover */
+.range-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 20%; right: 20%; height: 2px;
+  transform: scaleX(0);
+  transition: transform 0.4s ease;
+}
+
+.range-card:hover::before { transform: scaleX(1); }
+
+.range-card--1::before { background: linear-gradient(90deg, transparent, var(--range1), transparent); }
+.range-card--2::before { background: linear-gradient(90deg, transparent, var(--range2), transparent); }
+.range-card--3::before { background: linear-gradient(90deg, transparent, var(--range3), transparent); }
+
+.range-card__num {
+  font-family: var(--font-ui);
+  font-size: 9px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+  display: block;
+  color: var(--brass);
+}
+
+.range-card--2 .range-card__num { color: var(--range2); }
+.range-card--3 .range-card__num { color: var(--range3); }
+
+.range-card__name {
+  font-family: var(--font-display);
+  font-size: clamp(18px, 2vw, 22px);
+  font-weight: 600;
+  color: var(--cream);
+  line-height: 1.2;
+  margin-bottom: 6px;
+}
+
+.range-card__sub {
+  display: block;
+  font-weight: 400;
+  font-style: italic;
+  font-size: clamp(15px, 1.5vw, 17px);
+  color: var(--stone);
+  margin-top: 3px;
+}
+
+.range-card__desc {
+  font-size: 14px;
+  color: var(--stone);
+  line-height: 1.7;
+  margin-top: 10px;
+  margin-bottom: var(--space-sm);
+  max-width: 280px;
+}
+
+.range-card__cta {
+  font-family: var(--font-ui);
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--brass);
+  transition: gap 0.3s ease;
+}
+
+.range-card--2 .range-card__cta { color: var(--range2); }
+.range-card--3 .range-card__cta { color: var(--range3); }
+
+.range-card__cta::after { content: '→'; }
+.range-card:hover .range-card__cta { gap: 16px; }
+
+@media (max-width: 768px) {
+  .range-nav { grid-template-columns: 1fr; }
+  .range-card { border-right: none; border-bottom: 1px solid rgba(212,174,80,0.1); }
+  .range-card:last-child { border-bottom: none; }
+}
+</style>
+
+<div class="range-nav">
+  {% assign ranges = '1,2,3' | split: ',' %}
+  {% for i in ranges %}
+    {% assign n = forloop.index %}
+    {% assign url_key = 'range' | append: n | append: '_url' %}
+    {% assign name_key = 'range' | append: n | append: '_name' %}
+    {% assign sub_key = 'range' | append: n | append: '_sub' %}
+    {% assign desc_key = 'range' | append: n | append: '_desc' %}
+    {% assign cta_key = 'range' | append: n | append: '_cta' %}
+
+    <a href="{{ section.settings[url_key] }}" class="range-card range-card--{{ n }}" aria-label="{{ section.settings[name_key] }}">
+      <span class="range-card__num">Range {{ n }}</span>
+      <div class="range-card__name">
+        {{ section.settings[name_key] | default: 'Range Name' }}
+        <span class="range-card__sub">{{ section.settings[sub_key] }}</span>
+      </div>
+      <p class="range-card__desc">{{ section.settings[desc_key] }}</p>
+      <span class="range-card__cta">{{ section.settings[cta_key] | default: 'Explore' }}</span>
+    </a>
+  {% endfor %}
+</div>
+
+{% schema %}
+{
+  "name": "Range Navigation",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Range I — The Elevated Man"
+    },
+    {
+      "type": "text",
+      "id": "range1_name",
+      "label": "Name",
+      "default": "The Elevated Man"
+    },
+    {
+      "type": "text",
+      "id": "range1_sub",
+      "label": "Tagline",
+      "default": "Own the room."
+    },
+    {
+      "type": "textarea",
+      "id": "range1_desc",
+      "label": "Description",
+      "default": "Dark, sophisticated diffusers with scents that command attention. Oud, leather, cedarwood. For the man who curates his environment with the same precision he applies to everything else."
+    },
+    {
+      "type": "text",
+      "id": "range1_cta",
+      "label": "CTA label",
+      "default": "Enter Range I"
+    },
+    {
+      "type": "url",
+      "id": "range1_url",
+      "label": "URL"
+    },
+    {
+      "type": "header",
+      "content": "Range II — The Man Child"
+    },
+    {
+      "type": "text",
+      "id": "range2_name",
+      "label": "Name",
+      "default": "The Man Child"
+    },
+    {
+      "type": "text",
+      "id": "range2_sub",
+      "label": "Tagline",
+      "default": "Keep it ridiculous."
+    },
+    {
+      "type": "textarea",
+      "id": "range2_desc",
+      "label": "Description",
+      "default": "Rocket ships, cannons, volcanoes, and armoured trains. Because adulting is entirely optional and your space should make you grin."
+    },
+    {
+      "type": "text",
+      "id": "range2_cta",
+      "label": "CTA label",
+      "default": "Enter Range II"
+    },
+    {
+      "type": "url",
+      "id": "range2_url",
+      "label": "URL"
+    },
+    {
+      "type": "header",
+      "content": "Range III — Happy Wife, Happy Life"
+    },
+    {
+      "type": "text",
+      "id": "range3_name",
+      "label": "Name",
+      "default": "Happy Wife, Happy Life"
+    },
+    {
+      "type": "text",
+      "id": "range3_sub",
+      "label": "Tagline",
+      "default": "Choose your battles."
+    },
+    {
+      "type": "textarea",
+      "id": "range3_desc",
+      "label": "Description",
+      "default": "Gallery-worthy diffusers and neutral, sophisticated scents. The fragrance both of you actually want in the house — the compromise that doesn't feel like one."
+    },
+    {
+      "type": "text",
+      "id": "range3_cta",
+      "label": "CTA label",
+      "default": "Enter Range III"
+    },
+    {
+      "type": "url",
+      "id": "range3_url",
+      "label": "URL"
+    }
+  ],
+  "presets": [{ "name": "Range Navigation" }]
+}
+{% endschema %}
