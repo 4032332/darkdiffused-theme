@@ -119,8 +119,7 @@
                         style="
                           padding: 8px 16px;
                           font-family: var(--font-ui); font-size: 11px; letter-spacing: 0.1em;
-                          border: 1px solid {{ option.selected_value == value ? 'var(--brass-light)' : 'rgba(212,174,80,0.2)' }};
-                          color: {{ option.selected_value == value ? 'var(--brass-light)' : 'var(--fog)' }};
+                          {% if option.selected_value == value %}border: 1px solid var(--brass-light); color: var(--brass-light);{% else %}border: 1px solid rgba(212,174,80,0.2); color: var(--fog);{% endif %}
                           background: transparent; cursor: pointer; transition: all 0.3s;
                         ">
                   {{ value }}
