@@ -1,313 +1,205 @@
-/* Dark & Diffused — Speakeasy Smoke System v2
-   Vapour-physics smoke: bezier-path tendrils, turbulent curl, billowing clouds.
-   Three source types: cigar wisps (thin, slow), cocktail steam (denser columns),
-   and ceiling haze (broad, very slow drift).
-   Pauses on visibilitychange to save CPU.
+/* Dark & Diffused — Smoke System v3
+   Flow-field particle simulation.
+   1200 particles driven by Perlin noise vectors.
+   White/grey smoke (not amber) — correct for the reference images.
+   Particles are small soft brushes; density creates the form.
+   The flow field curls and turbulences organically.
 */
 
 (function () {
-  const CANVAS_ID = 'dd-smoke-canvas';
+  if (document.getElementById('dd-smoke')) return;
 
-  /* ── Lightweight noise (no library) ──
-     Value noise via hash — good enough for organic turbulence */
-  function hash(n) {
-    n = Math.sin(n) * 43758.5453123;
-    return n - Math.floor(n);
+  /* ── Perlin noise (proper implementation) ── */
+  const perm = new Uint8Array(512);
+  (function buildPerm() {
+    const src = new Uint8Array(256);
+    for (let i = 0; i < 256; i++) src[i] = i;
+    for (let i = 255; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [src[i], src[j]] = [src[j], src[i]];
+    }
+    for (let i = 0; i < 512; i++) perm[i] = src[i & 255];
+  })();
+
+  const GRAD = [[1,1],[-1,1],[1,-1],[-1,-1],[1,0],[-1,0],[0,1],[0,-1]];
+  function fade(t) { return t * t * t * (t * (t * 6 - 15) + 10); }
+  function lerp(a, b, t) { return a + (b - a) * t; }
+  function dot2(g, x, y) { return g[0] * x + g[1] * y; }
+
+  function perlin(x, y) {
+    const xi = Math.floor(x) & 255, yi = Math.floor(y) & 255;
+    const xf = x - Math.floor(x),   yf = y - Math.floor(y);
+    const u = fade(xf), v = fade(yf);
+    const aa = perm[perm[xi]   + yi],     ab = perm[perm[xi]   + yi + 1];
+    const ba = perm[perm[xi+1] + yi],     bb = perm[perm[xi+1] + yi + 1];
+    return lerp(
+      lerp(dot2(GRAD[aa & 7], xf,   yf  ), dot2(GRAD[ba & 7], xf-1, yf  ), u),
+      lerp(dot2(GRAD[ab & 7], xf,   yf-1), dot2(GRAD[bb & 7], xf-1, yf-1), u),
+      v
+    );
   }
-  function noise2(x, y) {
-    const ix = Math.floor(x), iy = Math.floor(y);
-    const fx = x - ix, fy = y - iy;
-    const ux = fx * fx * (3 - 2 * fx);
-    const uy = fy * fy * (3 - 2 * fy);
-    const a = hash(ix     + iy     * 57);
-    const b = hash(ix + 1 + iy     * 57);
-    const c = hash(ix     + (iy+1) * 57);
-    const d = hash(ix + 1 + (iy+1) * 57);
-    return a + (b-a)*ux + (c-a)*uy + (d-a+a-b-c+b)*ux*uy;
+
+  /* Two octaves for richer turbulence */
+  function noise(x, y) {
+    return perlin(x, y) * 0.65 + perlin(x * 2.1, y * 2.1) * 0.35;
   }
-  /* Curl noise — gives organic swirling motion */
-  function curlX(x, y, t) { return (noise2(x, y + 0.01 + t * 0.08) - noise2(x, y - 0.01 + t * 0.08)) / 0.02; }
-  function curlY(x, y, t) { return (noise2(x + 0.01, y + t * 0.08) - noise2(x - 0.01, y + t * 0.08)) / 0.02; }
 
-  function initSmoke() {
-    if (document.getElementById(CANVAS_ID)) return;
+  /* ── Canvas ── */
+  const canvas = document.createElement('canvas');
+  canvas.id = 'dd-smoke';
+  canvas.style.cssText = [
+    'position:fixed', 'top:0', 'left:0', 'width:100%', 'height:100%',
+    'pointer-events:none', 'z-index:1', 'opacity:0', 'transition:opacity 2.5s ease',
+  ].join(';');
+  document.body.appendChild(canvas);
+  setTimeout(() => { canvas.style.opacity = '1'; }, 600);
 
-    const canvas = document.createElement('canvas');
-    canvas.id = CANVAS_ID;
-    canvas.style.cssText = [
-      'position:fixed', 'top:0', 'left:0', 'width:100%', 'height:100%',
-      'pointer-events:none', 'z-index:1', 'opacity:0', 'transition:opacity 2s ease',
-    ].join(';');
-    document.body.appendChild(canvas);
+  const ctx = canvas.getContext('2d');
+  let W = 0, H = 0;
 
-    setTimeout(() => { canvas.style.opacity = '1'; }, 400);
+  function resize() {
+    W = canvas.width  = canvas.offsetWidth;
+    H = canvas.height = canvas.offsetHeight;
+  }
+  resize();
+  window.addEventListener('resize', () => { resize(); }, { passive: true });
 
-    const ctx = canvas.getContext('2d');
-    let W, H, streams = [], hazeParticles = [], tick_n = 0;
-    let paused = false;
+  /* ── Spawn zones — points along the bar (bottom of screen) ── */
+  // 6 loose clusters mimicking glasses / cigar rests on a bar top
+  const ZONES = [0.12, 0.24, 0.38, 0.52, 0.66, 0.80, 0.90];
 
-    function resize() {
-      W = canvas.width  = canvas.offsetWidth;
-      H = canvas.height = canvas.offsetHeight;
-    }
-    resize();
-    window.addEventListener('resize', () => { resize(); seedAll(); }, { passive: true });
+  /* ── Particles ── */
+  const N = 1200;
+  const px   = new Float32Array(N);
+  const py   = new Float32Array(N);
+  const page = new Float32Array(N);
+  const pmaxAge = new Float32Array(N);
+  const pspeed  = new Float32Array(N);
+  const pr      = new Float32Array(N);   // birth radius
+  const pzone   = new Uint8Array(N);     // which spawn zone
 
-    /* ══════════════════════════════════════
-       STREAM — a rising column of smoke
-       Each stream owns a chain of Nodes.
-       Nodes are the spine of the tendril.
-       We draw a smooth bezier tube through them.
-    ══════════════════════════════════════ */
-    const STREAM_COUNT = 12; // simultaneous columns
+  function reset(i) {
+    const z = Math.floor(Math.random() * ZONES.length);
+    pzone[i] = z;
+    px[i]   = W * (ZONES[z] + (Math.random() - 0.5) * 0.07);
+    py[i]   = H * (0.72 + Math.random() * 0.28);
+    page[i] = 0;
+    pmaxAge[i] = 280 + Math.random() * 380;
+    pspeed[i]  = 0.45 + Math.random() * 0.55;
+    pr[i]      = 2.5 + Math.random() * 4.5;
+  }
 
-    function makeStream() {
-      // Spawn points: clustered near bottom, like glasses on a bar
-      const clusterX = [0.15, 0.28, 0.42, 0.55, 0.67, 0.80].map(f => f * W);
-      const spawnX = clusterX[Math.floor(Math.random() * clusterX.length)]
-                     + (Math.random() - 0.5) * W * 0.06;
-      const type = Math.random() < 0.6 ? 'cigar' : 'cocktail';
+  /* Pre-scatter particles across their lifetimes so smoke is present on load */
+  for (let i = 0; i < N; i++) {
+    reset(i);
+    page[i] = Math.random() * pmaxAge[i];
+    // Estimate position at that life point (approximate)
+    const lifeFrac = page[i] / pmaxAge[i];
+    py[i] -= lifeFrac * H * 0.65;
+    px[i] += (Math.random() - 0.5) * W * 0.2;
+  }
 
-      return {
-        type,
-        x: spawnX,
-        y: H,
-        // each node in the spine
-        nodes: [],
-        // timing
-        age: 0,
-        // cigar: thin, pale, slow. cocktail: denser, amber-tinted, faster
-        speed:     type === 'cigar' ? 0.35 + Math.random() * 0.2 : 0.55 + Math.random() * 0.3,
-        maxNodes:  type === 'cigar' ? 28 : 22,
-        width0:    type === 'cigar' ? 2 + Math.random() * 2 : 6 + Math.random() * 4,
-        widthMax:  type === 'cigar' ? 28 + Math.random() * 20 : 55 + Math.random() * 30,
-        alpha0:    type === 'cigar' ? 0.06 + Math.random() * 0.04 : 0.09 + Math.random() * 0.04,
-        hue:       type === 'cigar' ? 25 + Math.random() * 10  : 28 + Math.random() * 14,
-        // for curl noise sampling
-        noiseOff:  Math.random() * 100,
-        drift:     (Math.random() - 0.5) * 0.4,
-        // birth offset so they don't all die together
-        lifePhase: Math.random(),
-      };
-    }
+  /* ── Time ── */
+  let t = 0;
+  let paused = false;
 
-    /* Node — a point in the spine of a stream */
-    function addNode(stream) {
-      const t = tick_n * 0.001;
-      const prev = stream.nodes[stream.nodes.length - 1];
-      const baseX = prev ? prev.x : stream.x;
-      const baseY = prev ? prev.y : stream.y;
+  /* ── Draw one particle ── */
+  function drawParticle(x, y, r, alpha) {
+    const grad = ctx.createRadialGradient(x, y, 0, x, y, r);
+    // Smoke colour: near-white with a trace of warm grey — NOT orange
+    grad.addColorStop(0,    `rgba(218, 212, 205, ${alpha})`);
+    grad.addColorStop(0.45, `rgba(200, 195, 188, ${alpha * 0.55})`);
+    grad.addColorStop(1,    `rgba(185, 180, 172, 0)`);
+    ctx.beginPath();
+    ctx.arc(x, y, r, 0, Math.PI * 2);
+    ctx.fillStyle = grad;
+    ctx.fill();
+  }
 
-      // Sample curl noise for organic turbulence
-      const nx = baseX / W * 3 + stream.noiseOff;
-      const ny = baseY / H * 3 + stream.noiseOff;
-      const cx = curlX(nx, ny, t) * 0.08;
-      const cy = curlY(nx, ny, t) * 0.04;
+  /* ── Main loop ── */
+  function frame() {
+    if (paused) { requestAnimationFrame(frame); return; }
 
-      // Upward momentum + curl + gentle horizontal drift
-      const vx = stream.drift + cx + Math.sin(tick_n * 0.004 + stream.noiseOff) * 0.3;
-      const vy = -stream.speed + cy;
+    t += 0.00055; // slow time evolution — smoke moves lazily
 
-      // Width grows from thin at base to wide at top
-      const frac = stream.nodes.length / stream.maxNodes;
-      const w = stream.width0 + (stream.widthMax - stream.width0) * Math.pow(frac, 0.7);
+    ctx.clearRect(0, 0, W, H);
+    ctx.globalCompositeOperation = 'screen';
 
-      // Alpha: fade in from base, fade out near top
-      const alpha = stream.alpha0 * Math.sin(frac * Math.PI);
+    for (let i = 0; i < N; i++) {
+      const life = page[i] / pmaxAge[i];
 
-      stream.nodes.push({
-        x: baseX + vx,
-        y: baseY + vy,
-        w,
-        alpha,
-        age: 0,
-      });
-    }
-
-    /* Draw one stream as a smooth ribbon */
-    function drawStream(s) {
-      if (s.nodes.length < 3) return;
-
-      const nodes = s.nodes;
-      const n = nodes.length;
-
-      // Draw as a series of bezier-curve segments with varying stroke width
-      // We step through pairs of nodes and draw tapered sections
-      for (let i = 1; i < n - 1; i++) {
-        const p0 = nodes[i - 1];
-        const p1 = nodes[i];
-        const p2 = nodes[i + 1];
-
-        // Control point midway for smooth curve
-        const mx = (p1.x + p2.x) / 2;
-        const my = (p1.y + p2.y) / 2;
-
-        const alpha = Math.min(p0.alpha, p1.alpha);
-        if (alpha <= 0.002) continue;
-
-        ctx.beginPath();
-        ctx.moveTo(p0.x, p0.y);
-        ctx.quadraticCurveTo(p1.x, p1.y, mx, my);
-
-        // Stroke width = tendril width at this segment
-        const w = (p0.w + p1.w) / 2;
-        ctx.lineWidth  = Math.max(0.5, w);
-        ctx.lineCap    = 'round';
-        ctx.lineJoin   = 'round';
-
-        // Colour: cigar smoke is cool grey-amber; cocktail smoke is warmer
-        const sat  = s.type === 'cigar' ? 12 : 30;
-        const lght = s.type === 'cigar' ? 72 : 65;
-        ctx.strokeStyle = `hsla(${s.hue}, ${sat}%, ${lght}%, ${alpha})`;
-        ctx.stroke();
+      if (life >= 1 || py[i] < -80) {
+        reset(i);
+        continue;
       }
 
-      // Puff at the top — the smoke blooms into a cloud as it disperses
-      const tip = nodes[n - 1];
-      if (tip && tip.w > 8) {
-        const puffR = tip.w * 1.4;
-        const puffAlpha = tip.alpha * 0.6;
-        if (puffAlpha > 0.003) {
-          const grad = ctx.createRadialGradient(tip.x, tip.y, 0, tip.x, tip.y, puffR);
-          const sat  = s.type === 'cigar' ? 8 : 22;
-          const lght = s.type === 'cigar' ? 75 : 68;
-          grad.addColorStop(0,   `hsla(${s.hue}, ${sat}%, ${lght}%, ${puffAlpha})`);
-          grad.addColorStop(0.5, `hsla(${s.hue}, ${sat}%, ${lght}%, ${puffAlpha * 0.4})`);
-          grad.addColorStop(1,   `hsla(${s.hue}, ${sat}%, ${lght}%, 0)`);
-          ctx.beginPath();
-          ctx.arc(tip.x, tip.y, puffR, 0, Math.PI * 2);
-          ctx.fillStyle = grad;
-          ctx.fill();
-        }
-      }
+      /* Sample flow field at this particle's position */
+      const fx = px[i] / W * 2.8;
+      const fy = py[i] / H * 2.8;
+
+      /* Primary angle from noise */
+      const angle = noise(fx, fy + t) * Math.PI * 3.5;
+
+      /* Horizontal drift from noise (independent axis) */
+      const driftAngle = noise(fx + 40, fy - t * 0.6) * Math.PI * 2;
+
+      const speed = pspeed[i];
+      px[i] += Math.cos(angle) * speed * 0.55
+             + Math.cos(driftAngle) * speed * 0.18;
+
+      /* Upward bias — stronger when young, weakens at top (smoke disperses) */
+      const upBias = 0.55 + (1 - life) * 0.35;
+      py[i] += Math.sin(angle) * speed * 0.25 - speed * upBias;
+
+      page[i]++;
+
+      /* Radius grows as particle rises (smoke expands) */
+      const r = pr[i] + life * (life < 0.5 ? 18 : 32);
+
+      /* Alpha: fade in quickly, hold, fade out slowly */
+      const alpha = life < 0.12
+        ? (life / 0.12) * 0.026
+        : life > 0.72
+          ? ((1 - life) / 0.28) * 0.026
+          : 0.026;
+
+      if (alpha < 0.002) continue;
+
+      drawParticle(px[i], py[i], r, alpha);
     }
 
-    /* ══════════════════════════════════════
-       CEILING HAZE — slow broad wisps
-       at the top 30% of the screen
-    ══════════════════════════════════════ */
-    const HAZE_COUNT = 18;
+    /* Ceiling haze — flat wisps at the top 25% of screen
+       These are large very-low-alpha horizontally-stretched ovals */
+    ctx.globalCompositeOperation = 'screen';
+    const hN = 10;
+    for (let h = 0; h < hN; h++) {
+      const hx = W * (0.05 + h / hN * 0.92);
+      const hy = H * (0.04 + noise(hx / W * 1.5, h + t * 0.3) * 0.18);
+      const hr = 140 + noise(h, t * 0.15) * 90;
+      const ha = 0.008 + noise(h + 10, t * 0.2) * 0.006;
 
-    function makeHaze() {
-      return {
-        x: Math.random() * W,
-        y: H * (Math.random() * 0.3),
-        r: 120 + Math.random() * 180,
-        vx: (Math.random() - 0.5) * 0.12,
-        vy: -0.04 - Math.random() * 0.06,
-        alpha: 0.015 + Math.random() * 0.018,
-        life: 0,
-        maxLife: 600 + Math.random() * 400,
-        hue: 24 + Math.random() * 12,
-      };
-    }
-
-    function drawHaze(h) {
-      const frac = h.life / h.maxLife;
-      const a = h.alpha * Math.sin(frac * Math.PI);
-      if (a <= 0.001) return;
-
-      // Elongated oval — smoke haze spreads horizontally
       ctx.save();
-      ctx.translate(h.x, h.y);
-      ctx.scale(1.8, 0.55);
-      const grad = ctx.createRadialGradient(0, 0, 0, 0, 0, h.r);
-      grad.addColorStop(0,   `hsla(${h.hue}, 8%, 70%, ${a})`);
-      grad.addColorStop(0.6, `hsla(${h.hue}, 8%, 70%, ${a * 0.3})`);
-      grad.addColorStop(1,   `hsla(${h.hue}, 8%, 70%, 0)`);
+      ctx.translate(hx, hy);
+      ctx.scale(2.2, 0.4);
+      const hgrad = ctx.createRadialGradient(0, 0, 0, 0, 0, hr);
+      hgrad.addColorStop(0,   `rgba(210, 205, 198, ${ha})`);
+      hgrad.addColorStop(0.6, `rgba(200, 195, 190, ${ha * 0.3})`);
+      hgrad.addColorStop(1,   `rgba(195, 190, 185, 0)`);
       ctx.beginPath();
-      ctx.arc(0, 0, h.r, 0, Math.PI * 2);
-      ctx.fillStyle = grad;
+      ctx.arc(0, 0, hr, 0, Math.PI * 2);
+      ctx.fillStyle = hgrad;
       ctx.fill();
       ctx.restore();
     }
 
-    /* ══════════════════════════════════════
-       SEED
-    ══════════════════════════════════════ */
-    function seedAll() {
-      streams = [];
-      hazeParticles = [];
-
-      for (let i = 0; i < STREAM_COUNT; i++) {
-        const s = makeStream();
-        // Pre-age streams so they're mid-flow on page load
-        const preAge = Math.floor(Math.random() * s.maxNodes * 0.8);
-        for (let j = 0; j < preAge; j++) addNode(s);
-        streams.push(s);
-      }
-
-      for (let i = 0; i < HAZE_COUNT; i++) {
-        const h = makeHaze();
-        h.life = Math.random() * h.maxLife;
-        hazeParticles.push(h);
-      }
-    }
-    seedAll();
-
-    /* ══════════════════════════════════════
-       MAIN LOOP
-    ══════════════════════════════════════ */
-    function frame() {
-      if (paused) { requestAnimationFrame(frame); return; }
-      tick_n++;
-
-      ctx.clearRect(0, 0, W, H);
-      ctx.globalCompositeOperation = 'screen';
-
-      // Draw ceiling haze (back layer)
-      for (let i = 0; i < hazeParticles.length; i++) {
-        const h = hazeParticles[i];
-        drawHaze(h);
-        h.x += h.vx;
-        h.y += h.vy;
-        h.life++;
-        if (h.life >= h.maxLife || h.y < -h.r) {
-          hazeParticles[i] = makeHaze();
-          hazeParticles[i].y = H * 0.3;
-        }
-      }
-
-      // Draw rising streams (front layer)
-      for (let i = 0; i < streams.length; i++) {
-        const s = streams[i];
-        drawStream(s);
-
-        // Grow the stream by one node per frame
-        if (s.nodes.length < s.maxNodes) {
-          addNode(s);
-        } else {
-          // Shift spine upward (drop oldest node, add new at top)
-          s.nodes.shift();
-          addNode(s);
-        }
-
-        s.age++;
-
-        // Slowly drift the spawn point
-        s.x += Math.sin(tick_n * 0.001 + i) * 0.08;
-
-        // When stream climbs off screen, respawn at bottom
-        const tip = s.nodes[s.nodes.length - 1];
-        if (tip && tip.y < -100) {
-          streams[i] = makeStream();
-        }
-      }
-
-      ctx.globalCompositeOperation = 'source-over';
-      requestAnimationFrame(frame);
-    }
-
-    frame();
-
-    document.addEventListener('visibilitychange', () => {
-      paused = document.hidden;
-    });
+    ctx.globalCompositeOperation = 'source-over';
+    requestAnimationFrame(frame);
   }
 
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initSmoke);
-  } else {
-    initSmoke();
-  }
+  frame();
+
+  document.addEventListener('visibilitychange', () => {
+    paused = document.hidden;
+  });
+
 })();
