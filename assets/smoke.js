@@ -1,218 +1,163 @@
-/* Dark & Diffused — Smoke v8
-   Source: bottom-right corner (cigarette off-screen)
-   Continuous ribbon, pre-simulated so it appears immediately full.
-   Particles emit every frame, old ones dissolve — gives the illusion
-   of an infinite continuous stream.
+/* Dark & Diffused — Smoke v9
+   Cigarette / candle smoke from bottom-left corner.
+
+   Approach: particle CHAIN drawn as per-segment strokes.
+   - chain[0] = newest particle (at source) → thin, bright
+   - chain[N] = oldest particle (dissipating) → wide, faint
+   - lineWidth and alpha computed per-segment from position in chain
+   - NO trail canvas — each frame is a clean draw of the current chain
+   - Pre-fill the chain on boot so smoke is immediately fully formed
+   - Noise field creates the organic curling
 */
 
 (function () {
   if (document.getElementById('dd-smoke')) return;
 
-  /* ── Value noise ── */
+  /* ── Noise ── */
   const R = new Float32Array(512);
   for (let i = 0; i < 512; i++) R[i] = Math.random() * 2 - 1;
+
   function fade(t) { return t * t * t * (t * (t * 6 - 15) + 10); }
   function vnoise(x, y) {
     const xi = Math.floor(x) & 255, yi = Math.floor(y) & 255;
-    const xf = x - Math.floor(x), yf = y - Math.floor(y);
-    const u = fade(xf), v = fade(yf);
+    const xf = x - Math.floor(x),   yf = y - Math.floor(y);
+    const u  = fade(xf),             v  = fade(yf);
     const aa = R[(xi     + yi * 57) & 511];
     const ba = R[(xi + 1 + yi * 57) & 511];
     const ab = R[(xi     + (yi + 1) * 57) & 511];
     const bb = R[(xi + 1 + (yi + 1) * 57) & 511];
-    return aa + u*(ba-aa) + v*(ab-aa) + u*v*(aa-ba-ab+bb);
+    return aa + u * (ba - aa) + v * (ab - aa) + u * v * (aa - ba - ab + bb);
   }
   function noise(x, y) {
-    return vnoise(x, y) * 0.55 + vnoise(x * 2.1 + 3.7, y * 2.1 + 1.9) * 0.45;
+    return vnoise(x, y) * 0.55 + vnoise(x * 2.1 + 4.3, y * 2.1 + 1.7) * 0.45;
   }
 
-  /* ── Canvases ── */
-  const trail  = document.createElement('canvas');
-  const tCtx   = trail.getContext('2d');
+  /* ── Canvas setup ── */
   const canvas = document.createElement('canvas');
   canvas.id    = 'dd-smoke';
   canvas.style.cssText = [
     'position:fixed', 'top:0', 'left:0', 'width:100%', 'height:100%',
-    'pointer-events:none', 'z-index:1', 'opacity:0', 'transition:opacity 1.5s ease',
+    'pointer-events:none', 'z-index:1',
+    'opacity:0', 'transition:opacity 1.5s ease',
+    'mix-blend-mode:screen',
   ].join(';');
   document.body.appendChild(canvas);
   const ctx = canvas.getContext('2d');
 
-  let W = 0, H = 0;
+  /* Offscreen — we draw chain here, then blur-composite to display */
+  const off    = document.createElement('canvas');
+  const offCtx = off.getContext('2d');
+
+  let W = window.innerWidth, H = window.innerHeight;
 
   function setSize() {
-    W = canvas.width = trail.width  = canvas.offsetWidth  || window.innerWidth;
-    H = canvas.height= trail.height = canvas.offsetHeight || window.innerHeight;
+    W = canvas.width = off.width  = window.innerWidth;
+    H = canvas.height= off.height = window.innerHeight;
   }
+  setSize();
 
-  /* ── Two smoke streams from bottom-right ── */
-  /* Main stream + secondary wisp with a different noise offset */
-  const STREAMS = [
-    {
-      /* source: just off bottom-right */
-      sx() { return W * 0.97; },
-      sy() { return H * 1.01; },
-      spread: 8,
-      count: 180,           // long chain = spans most of screen height
-      emitEvery: 1,
-      biasX: -0.50,         // drift left
-      biasY: -2.20,         // strong upward
-      noiseScale: 1.8,
-      noiseAmp: 2.6,        // high = dramatic swirling curls
-      noiseOX: 0,
-      noiseOY: 0,
-    },
-    {
-      sx() { return W * 0.93; },
-      sy() { return H * 1.03; },
-      spread: 5,
-      count: 110,
-      emitEvery: 2,
-      biasX: -0.40,
-      biasY: -1.90,
-      noiseScale: 2.2,
-      noiseAmp: 2.2,
-      noiseOX: 5.3,
-      noiseOY: 3.1,
-    },
-  ];
+  /* ── Simulation parameters ── */
+  const CHAIN_LEN   = window.innerWidth < 768 ? 300 : 480;
+  const NOISE_SCALE = 3.8;   // high → many curls per screen height
+  const NOISE_AMP   = 3.1;   // high → tight, dramatic curls
+  const BIAS_X      = 0.18;  // gentle rightward drift from left source
+  const BIAS_Y      = -1.70; // strong upward
+  const T_STEP      = 0.0016;// time evolution speed (how fast curls animate)
 
-  /* Particle chains */
-  const chains = STREAMS.map(() => []);
+  const chain = [];
+  let   t     = 0;
 
-  function emit(s, chain) {
+  function srcX() { return W * 0.03; }
+  function srcY() { return H + 5; }   // just off bottom edge
+
+  function emit() {
     chain.unshift({
-      x:  s.sx() + (Math.random() - 0.5) * s.spread,
-      y:  s.sy() + (Math.random() - 0.5) * s.spread,
+      x:  srcX() + (Math.random() - 0.5) * 6,
+      y:  srcY() + (Math.random() - 0.5) * 4,
       vx: (Math.random() - 0.5) * 0.3,
-      vy: -0.5 - Math.random() * 0.4,
+      vy: -0.3 - Math.random() * 0.3,
     });
+    if (chain.length > CHAIN_LEN) chain.pop();
   }
 
-  /* Update all particles in a chain using noise flow field */
-  function updateChain(s, chain, t) {
+  function stepSimulation() {
+    t += T_STEP;
     for (const p of chain) {
-      const nx    = (p.x / W) * s.noiseScale + s.noiseOX;
-      const ny    = (p.y / H) * s.noiseScale + s.noiseOY;
-      const angle = noise(nx, ny + t) * Math.PI * s.noiseAmp;
-      const tx    = s.biasX * 0.5 + Math.cos(angle) * 0.7;
-      const ty    = s.biasY * 0.5 + Math.sin(angle) * 0.35;
+      const nx    = (p.x / W) * NOISE_SCALE;
+      const ny    = (p.y / H) * NOISE_SCALE;
+      const angle = noise(nx, ny + t) * Math.PI * NOISE_AMP;
+      const tx    = BIAS_X * 0.5 + Math.cos(angle) * 0.75;
+      const ty    = BIAS_Y * 0.5 + Math.sin(angle) * 0.35;
       p.vx += (tx - p.vx) * 0.055;
       p.vy += (ty - p.vy) * 0.042;
       p.x  += p.vx;
       p.y  += p.vy;
     }
-    /* Cull old particles */
-    while (chain.length > s.count) chain.pop();
-    if (chain.length > 0) {
-      const tail = chain[chain.length - 1];
-      if (tail.y < -100 || tail.x < -100 || tail.x > W + 100) chain.pop();
-    }
   }
 
-  /* Draw ribbon as smooth bezier with multi-pass varying width */
-  function drawRibbon(chain) {
-    const n = chain.length;
-    if (n < 4) return;
+  /* ── Rendering ── */
+  function drawSmoke() {
+    const N = chain.length;
+    if (N < 3) return;
 
-    tCtx.lineCap  = 'round';
-    tCtx.lineJoin = 'round';
+    offCtx.clearRect(0, 0, W, H);
+    offCtx.lineCap  = 'round';
+    offCtx.lineJoin = 'round';
 
-    /*
-      Passes start at increasing indices into the chain.
-      chain[0] = newest (at source) → narrow, bright
-      chain[N] = oldest (upper area) → wide, soft
+    for (let i = 0; i < N - 1; i++) {
+      /* f = 0 → freshest (source), f = 1 → oldest (dissipating end) */
+      const f = i / (N - 1);
 
-      By starting each wider pass deeper into the chain,
-      only the older/higher smoke gets the wide soft halo —
-      exactly like real smoke expanding as it rises.
-    */
-    const passes = [
-      { from: 0,   lw: 1.5, a: 0.055 },
-      { from: 0,   lw: 5,   a: 0.024 },
-      { from: 12,  lw: 14,  a: 0.012 },
-      { from: 28,  lw: 28,  a: 0.007 },
-      { from: 48,  lw: 50,  a: 0.003 },
-    ];
+      /* Smoke widens as it ages (warm air expanding) */
+      const lw = 1.5 + f * f * 38;
 
-    for (const { from, lw, a } of passes) {
-      if (n - from < 4) continue;
-      tCtx.beginPath();
-      tCtx.moveTo(chain[from].x, chain[from].y);
-      for (let i = from + 1; i < n - 1; i++) {
-        const mx = (chain[i].x + chain[i + 1].x) * 0.5;
-        const my = (chain[i].y + chain[i + 1].y) * 0.5;
-        tCtx.quadraticCurveTo(chain[i].x, chain[i].y, mx, my);
-      }
-      tCtx.strokeStyle = `rgba(220,215,208,${a})`;
-      tCtx.lineWidth   = lw;
-      tCtx.stroke();
+      /* Smoke fades with quadratic falloff — bright at source, invisible at tip */
+      const alpha = (1 - f) * (1 - f) * 0.21;
+      if (alpha < 0.003) continue;
+
+      offCtx.beginPath();
+      offCtx.moveTo(chain[i].x,     chain[i].y);
+      offCtx.lineTo(chain[i + 1].x, chain[i + 1].y);
+      offCtx.strokeStyle = `rgba(228,220,212,${alpha.toFixed(3)})`;
+      offCtx.lineWidth   = lw;
+      offCtx.stroke();
     }
-  }
 
-  /* One simulation step: update chains + paint to trail canvas */
-  let t = 0, frame_n = 0;
-
-  function step() {
-    t       += 0.00022;
-    frame_n++;
-
-    tCtx.globalCompositeOperation = 'destination-out';
-    tCtx.fillStyle = 'rgba(0,0,0,0.003)';
-    tCtx.fillRect(0, 0, W, H);
-    tCtx.globalCompositeOperation = 'source-over';
-
-    for (let si = 0; si < STREAMS.length; si++) {
-      const s     = STREAMS[si];
-      const chain = chains[si];
-      if (frame_n % s.emitEvery === 0) emit(s, chain);
-      updateChain(s, chain, t);
-      drawRibbon(chain);
-    }
-  }
-
-  /* Composite trail → display canvas */
-  function composite() {
+    /* Composite to display canvas:
+       Pass 1 — slight blur to soften segment joints
+       Pass 2 — heavy blur for the soft volumetric body behind the crisp core */
     ctx.clearRect(0, 0, W, H);
-    ctx.globalCompositeOperation = 'screen';
-    ctx.filter      = 'blur(3px)';
+
+    ctx.filter      = 'blur(2px)';
     ctx.globalAlpha = 1;
-    ctx.drawImage(trail, 0, 0);
-    ctx.filter      = 'blur(18px)';
-    ctx.globalAlpha = 0.20;
-    ctx.drawImage(trail, 0, 0);
+    ctx.drawImage(off, 0, 0);
+
+    ctx.filter      = 'blur(16px)';
+    ctx.globalAlpha = 0.24;
+    ctx.drawImage(off, 0, 0);
+
     ctx.filter      = 'none';
     ctx.globalAlpha = 1;
-    ctx.globalCompositeOperation = 'source-over';
   }
 
-  /* ── Boot: pre-simulate then reveal ── */
-  setSize();
+  /* ── Boot: pre-fill chain silently, then reveal ── */
+  for (let i = 0; i < CHAIN_LEN; i++) { emit(); stepSimulation(); }
 
-  /* Pre-simulate 500 frames so the ribbon is fully formed on first paint */
-  for (let i = 0; i < 500; i++) step();
-  composite();
+  setTimeout(() => { canvas.style.opacity = '1'; }, 60);
 
-  /* Now reveal the canvas */
-  setTimeout(() => { canvas.style.opacity = '1'; }, 50);
-
+  /* ── Render loop ── */
   let paused = false;
 
-  function renderLoop() {
-    if (!paused) {
-      step();
-      composite();
-    }
-    requestAnimationFrame(renderLoop);
+  function loop() {
+    if (!paused) { emit(); stepSimulation(); drawSmoke(); }
+    requestAnimationFrame(loop);
   }
-
-  requestAnimationFrame(renderLoop);
+  requestAnimationFrame(loop);
 
   window.addEventListener('resize', () => {
     setSize();
-    /* Re-init chains after resize — sources recalculate to new W/H */
-    for (const c of chains) c.length = 0;
-    for (let i = 0; i < 500; i++) step();
+    chain.length = 0;
+    for (let i = 0; i < CHAIN_LEN; i++) { emit(); stepSimulation(); }
   }, { passive: true });
 
   document.addEventListener('visibilitychange', () => { paused = document.hidden; });
