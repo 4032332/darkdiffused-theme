@@ -1,34 +1,64 @@
-{% assign range_tag = '' %}
-{% assign range_colour = 'var(--range1)' %}
-{% for tag in product.tags %}
-  {% if tag contains 'range:' %}
-    {% assign range_tag = tag | remove: 'range:' | strip %}
+{% comment %}
+  Scarcity thresholds — products with ≤5 units get "Only N remaining",
+  ≤30 get a quieter "Limited" signal. Controlled via inventory quantity.
+{% endcomment %}
+{% assign inv = product.selected_or_first_available_variant.inventory_quantity %}
+{% assign inv_policy = product.selected_or_first_available_variant.inventory_management %}
+{% assign is_scarce  = false %}
+{% assign is_limited = false %}
+{% if inv_policy == 'shopify' %}
+  {% if inv <= 5 and inv > 0 %}
+    {% assign is_scarce = true %}
+  {% elsif inv <= 30 and inv > 5 %}
+    {% assign is_limited = true %}
   {% endif %}
-  {% if tag == 'range-2' or tag == 'man-child' %}
-    {% assign range_colour = 'var(--range2)' %}
-  {% elsif tag == 'range-3' or tag == 'happy-wife' %}
-    {% assign range_colour = 'var(--range3)' %}
+{% endif %}
+
+{% assign range_colour = '#D4AE50' %}
+{% assign range_label  = '' %}
+{% for tag in product.tags %}
+  {% if tag == 'range-2' or tag contains 'man-child' %}
+    {% assign range_colour = '#B87333' %}
+  {% elsif tag == 'range-3' or tag contains 'happy-wife' %}
+    {% assign range_colour = '#C8B8A8' %}
+  {% endif %}
+  {% if tag contains 'range:' %}
+    {% assign range_label = tag | remove: 'range:' | strip %}
   {% endif %}
 {% endfor %}
 
-<article class="product-card">
+<article class="product-card reveal-on-scroll" style="--range-accent: {{ range_colour }};">
+
   <a href="{{ product.url }}" class="product-card__image-wrap" tabindex="-1" aria-hidden="true">
     {% if product.featured_image != blank %}
       <img
         class="product-card__image"
         src="{{ product.featured_image | image_url: width: 600 }}"
-        srcset="{{ product.featured_image | image_url: width: 300 }} 300w,
-                {{ product.featured_image | image_url: width: 600 }} 600w,
-                {{ product.featured_image | image_url: width: 900 }} 900w"
-        sizes="(max-width: 600px) 100vw, (max-width: 900px) 50vw, 25vw"
+        srcset="
+          {{ product.featured_image | image_url: width: 300 }} 300w,
+          {{ product.featured_image | image_url: width: 600 }} 600w,
+          {{ product.featured_image | image_url: width: 900 }} 900w
+        "
+        sizes="(max-width: 600px) 100vw, (max-width: 900px) 50vw, 33vw"
         alt="{{ product.featured_image.alt | escape | default: product.title }}"
         loading="lazy"
         width="600"
-        height="800"
+        height="750"
       >
+      {% if product.images.size > 1 %}
+        <img
+          class="product-card__image product-card__image--hover"
+          src="{{ product.images[1] | image_url: width: 600 }}"
+          alt="{{ product.images[1].alt | escape | default: product.title }}"
+          loading="lazy"
+          width="600"
+          height="750"
+          aria-hidden="true"
+        >
+      {% endif %}
     {% else %}
-      <div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:var(--muted);">
-        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+      <div class="product-card__placeholder" aria-hidden="true">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="0.8">
           <rect x="3" y="3" width="18" height="18" rx="2"/>
           <circle cx="8.5" cy="8.5" r="1.5"/>
           <path d="m21 15-5-5L5 21"/>
@@ -36,46 +66,63 @@
       </div>
     {% endif %}
 
-    {% if product.compare_at_price > product.price %}
+    {% if is_scarce %}
+      <span class="product-card__badge product-card__badge--scarce">Only {{ inv }} left</span>
+    {% elsif is_limited %}
+      <span class="product-card__badge product-card__badge--limited">Limited</span>
+    {% elsif product.compare_at_price > product.price %}
       <span class="product-card__badge">Sale</span>
     {% endif %}
   </a>
 
   <div class="product-card__info">
-    {% if range_tag != blank %}
-      <span class="product-card__range" style="color: {{ range_colour }}">{{ range_tag }}</span>
+    {% if range_label != blank %}
+      <span class="product-card__range" style="color: {{ range_colour }};">{{ range_label }}</span>
     {% elsif product.type != blank %}
-      <span class="product-card__range" style="color: {{ range_colour }}">{{ product.type }}</span>
+      <span class="product-card__range" style="color: {{ range_colour }};">{{ product.type }}</span>
     {% endif %}
 
-    <a href="{{ product.url }}" style="text-decoration: none;">
+    <a href="{{ product.url }}" class="product-card__name-link">
       <h3 class="product-card__name">{{ product.title }}</h3>
     </a>
+
+    {% comment %} Star rating placeholder — ready for Loox / Judge.me {% endcomment %}
+    <div class="product-card__stars" aria-label="Reviews">
+      <span class="stars-placeholder" data-product-id="{{ product.id }}">
+        <span class="star-fill" style="width: 0%"></span>
+      </span>
+      <span class="review-count"></span>
+    </div>
 
     {% if product.metafields.custom.subtitle != blank %}
       <p class="product-card__sub">{{ product.metafields.custom.subtitle }}</p>
     {% elsif product.description != blank %}
-      <p class="product-card__sub">{{ product.description | strip_html | truncate: 80 }}</p>
+      <p class="product-card__sub">{{ product.description | strip_html | truncate: 75 }}</p>
     {% endif %}
 
     <div class="product-card__footer">
       <span class="product-card__price">
         {% if product.compare_at_price > product.price %}
-          <s style="color: var(--stone); font-size: 14px; margin-right: 6px;">{{ product.compare_at_price | money }}</s>
+          <s style="color: var(--stone); font-size: 13px; margin-right: 5px;">{{ product.compare_at_price | money }}</s>
         {% endif %}
         {{ product.price | money }}
       </span>
 
       {% if product.available %}
-        <form action="/cart/add" method="post" enctype="multipart/form-data">
+        <form action="/cart/add" method="post">
           <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
           <input type="hidden" name="quantity" value="1">
           <input type="hidden" name="return_to" value="back">
-          <button type="submit" class="product-card__add" aria-label="Add {{ product.title }} to cart">+</button>
+          <button type="submit" class="product-card__add" aria-label="Add {{ product.title | escape }} to bag">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+            </svg>
+          </button>
         </form>
       {% else %}
-        <span style="font-family: var(--font-ui); font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted);">Sold out</span>
+        <span class="product-card__sold-out">Sold out</span>
       {% endif %}
     </div>
   </div>
+
 </article>

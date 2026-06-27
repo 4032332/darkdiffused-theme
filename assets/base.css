@@ -17,7 +17,12 @@
   --leather-rich: #5C3D2E;
   --leather-worn: #8B5530;
 
-  /* Brass / Gold */
+  /* Filament amber — 2700K bulb, NOT gold */
+  --amber:        #FF9A2E;
+  --amber-dim:    #C8851A;
+  --amber-dark:   #8B6914;
+
+  /* Brass / Gold (hardware, fittings — slightly cooler than amber) */
   --brass-dark:   #5A4018;
   --brass-mid:    #8A6828;
   --brass:        #B89230;
@@ -1103,4 +1108,150 @@ em.brass, .brass-em {
   .product-grid--4 { grid-template-columns: 1fr; }
   .site-footer__grid { grid-template-columns: 1fr; gap: var(--space-md); }
   .site-footer__bottom { flex-direction: column; gap: var(--space-sm); text-align: center; }
+}
+
+/* ══════════════════════════════════════════════
+   ELEVATION LAYER — atmospheric enhancements
+   ══════════════════════════════════════════════ */
+
+/* ── Scroll reveal ── */
+.reveal-on-scroll {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.reveal-on-scroll.revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Staggered delay for grids */
+.product-grid .reveal-on-scroll:nth-child(2) { transition-delay: 0.08s; }
+.product-grid .reveal-on-scroll:nth-child(3) { transition-delay: 0.16s; }
+.product-grid .reveal-on-scroll:nth-child(4) { transition-delay: 0.24s; }
+
+/* ── Product card — enhanced hover ── */
+.product-card {
+  --range-accent: #D4AE50;
+}
+
+.product-card:hover {
+  border-color: color-mix(in srgb, var(--range-accent) 40%, transparent);
+  box-shadow:
+    0 12px 40px rgba(0,0,0,0.5),
+    0 0 0 1px color-mix(in srgb, var(--range-accent) 20%, transparent);
+}
+
+/* Second image reveal on hover */
+.product-card__image--hover {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+.product-card:hover .product-card__image--hover { opacity: 1; }
+.product-card:hover .product-card__image:not(.product-card__image--hover) { opacity: 0; }
+
+/* Card name link */
+.product-card__name-link { text-decoration: none; }
+
+/* Placeholder when no image */
+.product-card__placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #4A3A28;
+}
+
+/* Sold out label */
+.product-card__sold-out {
+  font-family: var(--font-ui);
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #4A3A28;
+}
+
+/* Scarcity badges */
+.product-card__badge--scarce {
+  background: rgba(184,115,51,0.15);
+  border-color: #B87333;
+  color: #E89A55;
+  animation: scarcePulse 2s ease-in-out infinite;
+}
+.product-card__badge--limited {
+  background: rgba(90,64,24,0.2);
+  border-color: rgba(90,64,24,0.5);
+  color: #8A6828;
+}
+@keyframes scarcePulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.7; }
+}
+
+/* ── Star rating placeholders ── */
+.product-card__stars {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 8px;
+  min-height: 16px;
+  font-size: 0; /* hidden until reviews app populates */
+}
+.stars-placeholder { color: #5A4018; font-size: 12px; letter-spacing: 2px; }
+.review-count { font-family: var(--font-ui); font-size: 10px; color: #7A6848; }
+
+.product-page__stars .stars-placeholder {
+  color: #8B6914;
+  font-size: 14px;
+  letter-spacing: 3px;
+}
+
+/* ── Add-to-bag button idle pulse (card) ── */
+.product-card__add {
+  animation: cardAddPulse 5s ease-in-out infinite;
+}
+.product-card__add:hover { animation: none; }
+@keyframes cardAddPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(200,133,26,0); }
+  60%       { box-shadow: 0 0 0 3px rgba(200,133,26,0.15); }
+}
+
+/* ── Featured products section — deeper wood ── */
+.bg-panel {
+  background-color: #0E0A04;
+  background-image:
+    repeating-linear-gradient(
+      90.5deg,
+      transparent 0px, transparent 8px,
+      rgba(60,35,10,0.1) 8px, rgba(60,35,10,0.1) 9px
+    ),
+    repeating-linear-gradient(
+      89.2deg,
+      transparent 0px, transparent 28px,
+      rgba(40,22,6,0.12) 28px, rgba(40,22,6,0.12) 29px
+    ),
+    linear-gradient(180deg, #100A04 0%, #0A0602 100%);
+}
+
+/* ── Announcement bar — amber not brass ── */
+.announcement-bar {
+  background: linear-gradient(90deg,
+    #8B6914 0%,
+    #C8851A 25%,
+    #FF9A2E 50%,
+    #C8851A 75%,
+    #8B6914 100%
+  );
+}
+
+/* ── Product grid gap ── */
+.product-grid { gap: 1px; background: rgba(200,133,26,0.06); }
+.product-card { background: #0E0A04; }
+
+/* ── Breadcrumb ── */
+.breadcrumb {
+  max-width: var(--max-width);
 }

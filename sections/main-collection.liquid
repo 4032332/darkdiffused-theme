@@ -1,60 +1,285 @@
+<style>
+/* ── COLLECTION HEADER — full-width, dramatic ── */
+.collection-hero {
+  position: relative;
+  min-height: 56vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  overflow: hidden;
+  padding: var(--space-2xl) var(--gutter) var(--space-xl);
+}
+
+/* Wood grain behind — same room language as hero */
+.collection-hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    repeating-linear-gradient(
+      90.5deg,
+      transparent 0px, transparent 8px,
+      rgba(60,35,10,0.1) 8px, rgba(60,35,10,0.1) 9px
+    ),
+    repeating-linear-gradient(
+      89.2deg,
+      transparent 0px, transparent 28px,
+      rgba(40,22,6,0.14) 28px, rgba(40,22,6,0.14) 29px
+    ),
+    linear-gradient(180deg, #0A0602 0%, #0E0804 50%, #080402 100%);
+  z-index: 0;
+}
+
+/* Accent glow in range colour */
+.collection-hero__glow {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 600px;
+  height: 300px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 1;
+  filter: blur(60px);
+  opacity: 0.2;
+}
+
+/* Wainscot frame */
+.collection-hero__frame {
+  position: absolute;
+  top: var(--space-lg);
+  bottom: var(--space-md);
+  left: var(--gutter);
+  right: var(--gutter);
+  border: 1px solid rgba(200,133,26,0.07);
+  pointer-events: none;
+  z-index: 2;
+}
+.collection-hero__frame::before {
+  content: '';
+  position: absolute;
+  top: 8px; bottom: 8px; left: 8px; right: 8px;
+  border: 1px solid rgba(200,133,26,0.04);
+}
+
+.collection-hero__content {
+  position: relative;
+  z-index: 3;
+}
+
+.collection-hero__eyebrow {
+  font-family: var(--font-ui);
+  font-size: 9px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: #8B6914;
+  margin-bottom: var(--space-sm);
+}
+
+.collection-hero__title {
+  font-family: var(--font-display);
+  font-size: clamp(40px, 7vw, 88px);
+  font-weight: 700;
+  line-height: 1.05;
+  margin-bottom: var(--space-sm);
+  text-shadow: 0 2px 40px rgba(0,0,0,0.8);
+}
+
+.collection-hero__desc {
+  font-family: var(--font-body);
+  font-size: 18px;
+  font-style: italic;
+  color: #A89878;
+  max-width: 520px;
+  margin: 0 auto var(--space-md);
+  line-height: 1.6;
+}
+
+/* Scent pills */
+.scent-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  margin-top: var(--space-md);
+}
+
+.scent-pill {
+  font-family: var(--font-ui);
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  padding: 6px 14px;
+  border-radius: 2px;
+  border: 1px solid rgba(200,133,26,0.2);
+  color: #7A6848;
+  background: rgba(255,255,255,0.02);
+  backdrop-filter: blur(4px);
+  transition: color 0.25s, border-color 0.25s;
+}
+.scent-pill:hover {
+  color: #D4B896;
+  border-color: rgba(200,133,26,0.4);
+}
+
+/* Range-specific accent colours */
+.collection-hero--range1 .collection-hero__title { color: #D4AE50; }
+.collection-hero--range1 .scent-pill:hover       { color: #D4AE50; border-color: rgba(212,174,80,0.4); }
+
+.collection-hero--range2 .collection-hero__title { color: #B87333; }
+.collection-hero--range2 .scent-pill:hover       { color: #B87333; border-color: rgba(184,115,51,0.4); }
+
+.collection-hero--range3 .collection-hero__title { color: #C8B8A8; }
+.collection-hero--range3 .scent-pill:hover       { color: #C8B8A8; border-color: rgba(200,184,168,0.4); }
+
+/* Brass divider */
+.brass-rail {
+  height: 1px;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    rgba(200,133,26,0.15) 20%,
+    rgba(212,174,80,0.35) 50%,
+    rgba(200,133,26,0.15) 80%,
+    transparent 100%
+  );
+  margin: 0;
+}
+
+/* ── PRODUCT GRID ── */
+.collection-body {
+  padding: var(--space-xl) var(--gutter);
+  max-width: var(--max-width);
+  margin: 0 auto;
+}
+
+.collection-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-lg);
+  padding-bottom: var(--space-md);
+  border-bottom: 1px solid rgba(200,133,26,0.1);
+}
+
+.collection-count {
+  font-family: var(--font-ui);
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #7A6848;
+}
+
+.breadcrumb {
+  font-family: var(--font-ui);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #7A6848;
+}
+.breadcrumb span + span::before { content: ' / '; opacity: 0.5; }
+.breadcrumb a { color: inherit; text-decoration: none; transition: color 0.2s; }
+.breadcrumb a:hover { color: #FF9A2E; }
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-sm);
+  margin-top: var(--space-xl);
+  padding-top: var(--space-lg);
+  border-top: 1px solid rgba(200,133,26,0.1);
+}
+
+@media (max-width: 700px) {
+  .collection-hero { min-height: 44vh; padding: var(--space-xl) var(--gutter-sm) var(--space-lg); }
+  .collection-hero__frame { left: var(--gutter-sm); right: var(--gutter-sm); }
+  .collection-body { padding: var(--space-lg) var(--gutter-sm); }
+}
+</style>
+
+{% comment %} Determine range from collection handle {% endcomment %}
+{% assign range_class = 'collection-hero--range1' %}
+{% assign range_num   = 'Range I' %}
+{% assign glow_color  = '#D4AE50' %}
+{% assign scents      = 'Oud,Leather,Cedarwood,Black Pepper,Vetiver,Dark Amber' | split: ',' %}
+
+{% if collection.handle contains 'man-child' %}
+  {% assign range_class = 'collection-hero--range2' %}
+  {% assign range_num   = 'Range II' %}
+  {% assign glow_color  = '#B87333' %}
+  {% assign scents      = 'Campfire,Popcorn,Bacon,Bubblegum,Dragon Smoke,Volcanic Ash' | split: ',' %}
+{% elsif collection.handle contains 'happy-wife' %}
+  {% assign range_class = 'collection-hero--range3' %}
+  {% assign range_num   = 'Range III' %}
+  {% assign glow_color  = '#C8B8A8' %}
+  {% assign scents      = 'White Tea,Fig,Sandalwood,Cedar,Linen,Sea Salt' | split: ',' %}
+{% elsif collection.handle contains 'elevated-man' %}
+  {% assign range_class = 'collection-hero--range1' %}
+{% endif %}
+
 {% paginate collection.products by section.settings.products_per_page %}
 
-<div class="breadcrumb">
-  <span><a href="/">Home</a></span>
-  <span>{{ collection.title }}</span>
-</div>
+<!-- Dramatic collection header -->
+<div class="collection-hero {{ range_class }}">
+  <div class="collection-hero__glow" style="background: {{ glow_color }};"></div>
+  <div class="collection-hero__frame" aria-hidden="true"></div>
 
-<div class="collection-header">
-  <div class="collection-header__content">
-    <div class="eyebrow">
-      {% assign range_num = '' %}
-      {% for tag in collection.all_tags %}
-        {% if tag contains 'range:' %}
-          {% assign range_num = tag | remove: 'range:' | strip %}
-        {% endif %}
-      {% endfor %}
-      {% if range_num != blank %}Range {{ range_num }} ·{% endif %}
-      {{ collection.products_count }} products
-    </div>
-    <h1 class="display-lg">{{ collection.title }}</h1>
+  <div class="collection-hero__content">
+    <p class="collection-hero__eyebrow">{{ range_num }} · {{ collection.products_count }} products</p>
+    <h1 class="collection-hero__title">{{ collection.title }}</h1>
+
     {% if collection.description != blank %}
-      <p class="italic-sub">{{ collection.description }}</p>
+      <p class="collection-hero__desc">{{ collection.description }}</p>
     {% endif %}
+
+    <div class="scent-pills">
+      {% for scent in scents %}
+        <span class="scent-pill">{{ scent }}</span>
+      {% endfor %}
+    </div>
   </div>
 </div>
 
-<hr class="brass-rule">
+<div class="brass-rail"></div>
 
-<section class="section-pad">
-  <div class="container">
-    <div class="product-grid product-grid--3">
-      {% for product in collection.products %}
-        {% render 'product-card', product: product %}
-      {% else %}
-        <p style="color: var(--fog); font-style: italic; grid-column: 1/-1; padding: var(--space-xl) 0;">No products found in this collection.</p>
-      {% endfor %}
+<!-- Product grid -->
+<div class="collection-body">
+  <div class="collection-meta">
+    <div class="breadcrumb">
+      <span><a href="/">Home</a></span>
+      <span>{{ collection.title }}</span>
     </div>
-
-    {% if paginate.pages > 1 %}
-      <div class="pagination" style="display: flex; justify-content: center; gap: var(--space-sm); margin-top: var(--space-xl);">
-        {% if paginate.previous %}
-          <a href="{{ paginate.previous.url }}" class="btn-ghost" style="text-decoration: none;">&larr; Previous</a>
-        {% endif %}
-        {% for part in paginate.parts %}
-          {% if part.is_link %}
-            <a href="{{ part.url }}" class="btn-ghost" style="text-decoration: none; min-width: 44px; justify-content: center;">{{ part.title }}</a>
-          {% else %}
-            <span style="display: inline-flex; align-items: center; padding: 13px 16px; color: var(--brass-light); border: 1px solid var(--brass);">{{ part.title }}</span>
-          {% endif %}
-        {% endfor %}
-        {% if paginate.next %}
-          <a href="{{ paginate.next.url }}" class="btn-ghost" style="text-decoration: none;">Next &rarr;</a>
-        {% endif %}
-      </div>
-    {% endif %}
+    <span class="collection-count">{{ collection.products_count }} products</span>
   </div>
-</section>
+
+  <div class="product-grid product-grid--3">
+    {% for product in collection.products %}
+      {% render 'product-card', product: product %}
+    {% else %}
+      <p style="color: var(--fog); font-style: italic; grid-column: 1/-1; padding: var(--space-xl) 0; text-align: center;">No products in this collection yet.</p>
+    {% endfor %}
+  </div>
+
+  {% if paginate.pages > 1 %}
+    <div class="pagination">
+      {% if paginate.previous %}
+        <a href="{{ paginate.previous.url }}" class="btn-ghost">&larr; Previous</a>
+      {% endif %}
+      {% for part in paginate.parts %}
+        {% if part.is_link %}
+          <a href="{{ part.url }}" class="btn-ghost" style="min-width:44px;justify-content:center;">{{ part.title }}</a>
+        {% else %}
+          <span style="display:inline-flex;align-items:center;padding:13px 16px;color:var(--brass-light);border:1px solid var(--brass);">{{ part.title }}</span>
+        {% endif %}
+      {% endfor %}
+      {% if paginate.next %}
+        <a href="{{ paginate.next.url }}" class="btn-ghost">Next &rarr;</a>
+      {% endif %}
+    </div>
+  {% endif %}
+</div>
 
 {% endpaginate %}
 
@@ -66,9 +291,7 @@
       "type": "range",
       "id": "products_per_page",
       "label": "Products per page",
-      "min": 6,
-      "max": 24,
-      "step": 3,
+      "min": 6, "max": 24, "step": 3,
       "default": 12
     }
   ],

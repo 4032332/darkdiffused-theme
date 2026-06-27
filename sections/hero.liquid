@@ -1,404 +1,390 @@
 <style>
+/* ── HERO — The Room ── */
 .hero {
-  min-height: 92vh;
-  display: grid;
-  grid-template-columns: 55% 45%;
-  overflow: hidden;
   position: relative;
-}
-
-.hero__left {
-  padding: 80px var(--gutter) 80px;
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
+  align-items: center;
   justify-content: center;
-  position: relative;
-  z-index: 1;
-  background-color: #0E0A04;
+  overflow: hidden;
+  background-color: #060402;
   background-image:
     repeating-linear-gradient(
       90.5deg,
-      transparent 0px, transparent 6px,
-      rgba(60,35,10,0.12) 6px, rgba(60,35,10,0.12) 7px
+      transparent 0px, transparent 8px,
+      rgba(60,35,10,0.08) 8px, rgba(60,35,10,0.08) 9px
     ),
     repeating-linear-gradient(
-      89.5deg,
-      transparent 0px, transparent 20px,
-      rgba(40,22,6,0.18) 20px, rgba(40,22,6,0.18) 21px
+      89.2deg,
+      transparent 0px, transparent 28px,
+      rgba(40,22,6,0.12) 28px, rgba(40,22,6,0.12) 29px
     ),
-    linear-gradient(180deg, #141008 0%, #0E0A04 40%, #120E06 100%);
+    linear-gradient(180deg,
+      #060402 0%,
+      #0E0804 20%,
+      #100A04 55%,
+      #0A0602 80%,
+      #060402 100%
+    );
 }
 
-/* Wainscoting border */
-.hero__wainscot {
-  position: absolute;
-  top: var(--space-lg); bottom: var(--space-lg);
-  left: var(--space-lg); right: var(--space-lg);
-  border: 1px solid rgba(212,174,80,0.07);
-  pointer-events: none;
-}
-
-.hero__wainscot::before {
+/* Wainscoting — dark walnut panels on left and right walls */
+.hero::before {
   content: '';
   position: absolute;
-  top: 8px; bottom: 8px; left: 8px; right: 8px;
-  border: 1px solid rgba(212,174,80,0.04);
+  top: var(--space-xl); bottom: 80px;
+  left: var(--gutter); right: var(--gutter);
+  border: 1px solid rgba(200,133,26,0.08);
+  pointer-events: none;
+  z-index: 2;
+}
+.hero::after {
+  content: '';
+  position: absolute;
+  top: calc(var(--space-xl) + 10px); bottom: 90px;
+  left: calc(var(--gutter) + 10px); right: calc(var(--gutter) + 10px);
+  border: 1px solid rgba(200,133,26,0.04);
+  pointer-events: none;
+  z-index: 2;
 }
 
-/* Filament lamp effect */
-.hero__cord {
+/* ── FILAMENT BULB ── */
+.hero__bulb-wrap {
   position: absolute;
   top: 0;
-  left: calc(50% + 60px);
-  width: 1px;
-  height: 140px;
-  background: linear-gradient(to bottom, rgba(80,60,20,0.4), rgba(212,174,80,0.35));
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 3;
+  pointer-events: none;
 }
 
-.hero__cord::after {
+.hero__cord {
+  width: 1px;
+  height: 120px;
+  background: linear-gradient(to bottom, rgba(80,50,10,0.0), rgba(200,133,26,0.5));
+  margin: 0 auto;
+}
+
+.hero__bulb {
+  width: 32px;
+  height: 40px;
+  border-radius: 50% 50% 45% 45%;
+  background: radial-gradient(ellipse at 40% 35%,
+    #FFF8E8 0%,
+    #FFDF80 20%,
+    #FF9A2E 50%,
+    #C8851A 80%,
+    #8B6914 100%
+  );
+  box-shadow:
+    0 0 8px rgba(255,154,46,0.9),
+    0 0 24px rgba(255,154,46,0.6),
+    0 0 60px rgba(255,154,46,0.35),
+    0 0 120px rgba(255,154,46,0.15);
+  margin: 0 auto;
+  animation: filamentFlicker 6s ease-in-out infinite;
+  position: relative;
+}
+
+/* Bulb base cap */
+.hero__bulb::after {
   content: '';
   position: absolute;
-  bottom: -4px; left: 50%; transform: translateX(-50%);
-  width: 28px; height: 28px;
-  border-radius: 50%;
-  background: radial-gradient(ellipse at 35% 30%,
-    var(--brass-gleam) 0%,
-    var(--brass-light) 25%,
-    var(--brass) 55%,
-    var(--brass-dark) 100%
-  );
-  box-shadow: 0 0 24px rgba(212,174,80,0.55), 0 2px 8px rgba(0,0,0,0.8);
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 20px;
+  height: 10px;
+  background: linear-gradient(180deg, var(--brass-mid, #8A6828), var(--brass-dark, #5A4018));
+  border-radius: 0 0 4px 4px;
 }
 
-.hero__lamp-glow {
+@keyframes filamentFlicker {
+  0%, 100% { opacity: 1; box-shadow: 0 0 8px rgba(255,154,46,0.9), 0 0 24px rgba(255,154,46,0.6), 0 0 60px rgba(255,154,46,0.35), 0 0 120px rgba(255,154,46,0.15); }
+  15%       { opacity: 0.94; box-shadow: 0 0 6px rgba(255,154,46,0.8), 0 0 18px rgba(255,154,46,0.5), 0 0 48px rgba(255,154,46,0.28), 0 0 100px rgba(255,154,46,0.12); }
+  30%       { opacity: 1; }
+  72%       { opacity: 0.96; box-shadow: 0 0 7px rgba(255,154,46,0.85), 0 0 20px rgba(255,154,46,0.55), 0 0 52px rgba(255,154,46,0.3), 0 0 110px rgba(255,154,46,0.13); }
+  85%       { opacity: 1; }
+}
+
+/* Radial light pool cast by bulb */
+.hero__light-pool {
   position: absolute;
-  top: -80px; left: calc(50% + 30px);
-  width: 320px; height: 320px;
+  top: 60px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 900px;
+  height: 700px;
   border-radius: 50%;
-  background: radial-gradient(ellipse,
-    rgba(255,190,60,0.18) 0%,
-    rgba(200,140,40,0.07) 40%,
+  background: radial-gradient(ellipse at 50% 0%,
+    rgba(255,154,46,0.14) 0%,
+    rgba(200,133,26,0.07) 30%,
+    rgba(139,105,20,0.03) 55%,
     transparent 70%
   );
-  filter: blur(22px);
   pointer-events: none;
+  z-index: 2;
+  animation: lightBreathe 6s ease-in-out infinite;
+}
+
+@keyframes lightBreathe {
+  0%, 100% { opacity: 1; }
+  15%       { opacity: 0.88; }
+  30%       { opacity: 1; }
+  72%       { opacity: 0.92; }
+}
+
+/* Side wall lanterns */
+.hero__lantern {
+  position: absolute;
+  top: 30%;
+  width: 200px;
+  height: 300px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 2;
+  background: radial-gradient(ellipse,
+    rgba(255,154,46,0.07) 0%,
+    rgba(200,133,26,0.03) 40%,
+    transparent 70%
+  );
+  filter: blur(12px);
+}
+.hero__lantern--left  { left: -40px; }
+.hero__lantern--right { right: -40px; }
+
+/* ── CONTENT ── */
+.hero__content {
+  position: relative;
+  z-index: 4;
+  text-align: center;
+  padding: 0 var(--gutter);
+  max-width: 880px;
+  margin-top: 60px;
+}
+
+.hero__eyebrow {
+  font-family: var(--font-ui);
+  font-size: 9px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--brass-mid, #8A6828);
+  margin-bottom: var(--space-md);
 }
 
 .hero__headline {
-  position: relative;
-  z-index: 1;
-  margin-bottom: 20px;
+  margin-bottom: var(--space-md);
+  line-height: 1.05;
+}
+
+.hero__h1-top {
+  font-family: var(--font-display);
+  font-size: clamp(56px, 9vw, 120px);
+  font-weight: 700;
+  color: #D4B896;
+  letter-spacing: -0.01em;
+  display: block;
+  text-shadow:
+    0 2px 40px rgba(255,154,46,0.25),
+    0 0 80px rgba(255,154,46,0.1);
+}
+
+.hero__h1-em {
+  font-family: var(--font-display);
+  font-size: clamp(58px, 9.5vw, 126px);
+  font-weight: 700;
+  font-style: italic;
+  color: #FF9A2E;
+  display: block;
+  text-shadow:
+    0 0 40px rgba(255,154,46,0.5),
+    0 0 80px rgba(255,154,46,0.25),
+    0 2px 4px rgba(0,0,0,0.8);
 }
 
 .hero__sub {
-  position: relative;
-  z-index: 1;
-  max-width: 420px;
-  margin-bottom: var(--space-lg);
+  font-family: var(--font-body);
+  font-size: clamp(16px, 1.4vw, 20px);
+  font-style: italic;
+  color: #D4B896;
+  opacity: 0.75;
+  max-width: 540px;
+  margin: 0 auto var(--space-lg);
+  line-height: 1.6;
 }
 
 .hero__btns {
-  position: relative;
-  z-index: 1;
   display: flex;
   gap: var(--space-sm);
+  justify-content: center;
   flex-wrap: wrap;
+  margin-bottom: var(--space-xl);
 }
 
-/* Right panel — leather */
-.hero__right {
+/* ── BAR TOP ── */
+.hero__bar-top {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 4;
+}
+
+.hero__bar-surface {
+  height: 56px;
+  background:
+    repeating-linear-gradient(
+      90.3deg,
+      transparent 0px, transparent 10px,
+      rgba(60,35,10,0.15) 10px, rgba(60,35,10,0.15) 11px
+    ),
+    repeating-linear-gradient(
+      89.8deg,
+      transparent 0px, transparent 35px,
+      rgba(40,22,6,0.2) 35px, rgba(40,22,6,0.2) 36px
+    ),
+    linear-gradient(180deg,
+      #2A1A08 0%,
+      #1A0E04 40%,
+      #120A02 100%
+    );
+  border-top: 1px solid rgba(200,133,26,0.15);
+  box-shadow:
+    0 -1px 0 rgba(255,154,46,0.06),
+    inset 0 1px 0 rgba(255,200,100,0.08),
+    0 -20px 60px rgba(0,0,0,0.6);
   position: relative;
+}
+
+/* Brass rail — the polished strip along the bar top */
+.hero__bar-rail {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 5px;
+  background: linear-gradient(90deg,
+    #8B6914 0%,
+    #C8851A 8%,
+    #FF9A2E 20%,
+    #E8CC78 30%,
+    #D4AE50 40%,
+    #C8851A 50%,
+    #E8CC78 62%,
+    #D4AE50 72%,
+    #C8851A 85%,
+    #8B6914 100%
+  );
+  box-shadow:
+    0 0 12px rgba(255,154,46,0.4),
+    0 2px 8px rgba(0,0,0,0.6);
+}
+
+/* Range nav in bar surface */
+.hero__range-nav {
+  position: absolute;
+  inset: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  overflow: hidden;
-  background-color: #200E06;
-  background-image:
-    radial-gradient(ellipse 2px 1px at 25% 45%, rgba(255,160,60,0.04) 0%, transparent 100%),
-    radial-gradient(ellipse 1px 2px at 75% 25%, rgba(255,160,60,0.03) 0%, transparent 100%),
-    repeating-linear-gradient(
-      43deg,
-      transparent 0px, transparent 8px,
-      rgba(180,80,20,0.03) 8px, rgba(180,80,20,0.03) 9px
-    ),
-    repeating-linear-gradient(
-      -43deg,
-      transparent 0px, transparent 8px,
-      rgba(80,30,5,0.04) 8px, rgba(80,30,5,0.04) 9px
-    ),
-    linear-gradient(160deg, #2A1208 0%, #1A0C06 50%, #200E08 100%);
+  gap: var(--space-xl);
 }
 
-/* Brass border on leather panel */
-.hero__right::after {
-  content: '';
-  position: absolute;
-  inset: 20px;
-  border: 1px solid rgba(212,174,80,0.1);
-  pointer-events: none;
-}
-
-.hero__right-glow {
-  position: absolute;
-  top: 15%; right: 10%;
-  width: 280px; height: 280px;
-  border-radius: 50%;
-  background: radial-gradient(ellipse,
-    rgba(255,200,80,0.13) 0%,
-    rgba(200,130,40,0.05) 45%,
-    transparent 70%
-  );
-  filter: blur(24px);
-  pointer-events: none;
-}
-
-/* Product shelf display */
-.hero__products {
-  position: relative;
-  z-index: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.hero__shelf-items {
-  display: flex;
-  gap: 40px;
-  align-items: flex-end;
-  padding-bottom: 0;
-}
-
-.hero__shelf-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  cursor: pointer;
-  text-decoration: none;
-}
-
-.hero__shelf-item-label {
+.hero__range-link {
   font-family: var(--font-ui);
   font-size: 9px;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.25em;
   text-transform: uppercase;
-  margin-top: 12px;
-}
-
-/* Polished wood shelf */
-.hero__shelf {
-  width: 260px;
-  height: 9px;
-  background: linear-gradient(180deg,
-    var(--wood-light) 0%,
-    var(--wood-grain) 40%,
-    var(--wood-dark) 100%
-  );
-  box-shadow:
-    0 4px 20px rgba(0,0,0,0.8),
-    inset 0 1px 0 rgba(255,200,100,0.1);
-  margin-top: -1px;
+  color: var(--fog, #A89878);
+  text-decoration: none;
+  transition: color 0.3s;
   position: relative;
 }
-
-/* Brass shelf brackets */
-.hero__shelf::before, .hero__shelf::after {
+.hero__range-link::after {
   content: '';
   position: absolute;
-  bottom: -16px;
-  width: 6px; height: 16px;
-  background: linear-gradient(180deg, var(--brass-light), var(--brass-dark));
+  bottom: -4px;
+  left: 0; right: 0;
+  height: 1px;
+  background: #FF9A2E;
+  transform: scaleX(0);
+  transition: transform 0.3s ease;
 }
-.hero__shelf::before { left: 16px; }
-.hero__shelf::after  { right: 16px; }
+.hero__range-link:hover { color: #FF9A2E; }
+.hero__range-link:hover::after { transform: scaleX(1); }
 
-/* Mist animation */
-.hero__mist {
-  width: 56px; height: 26px;
-  border-radius: 50%;
-  filter: blur(8px);
-  animation: mistFloat 3.5s ease-in-out infinite;
-  margin-bottom: -6px;
-}
+/* Range link accent colours */
+.hero__range-link--i   { --accent: #D4AE50; }
+.hero__range-link--ii  { --accent: #B87333; }
+.hero__range-link--iii { --accent: #C8B8A8; }
+.hero__range-link--i:hover   { color: #D4AE50; }
+.hero__range-link--ii:hover  { color: #B87333; }
+.hero__range-link--iii:hover { color: #C8B8A8; }
+.hero__range-link--i:hover::after   { background: #D4AE50; }
+.hero__range-link--ii:hover::after  { background: #B87333; }
+.hero__range-link--iii:hover::after { background: #C8B8A8; }
 
-.hero__mist--amber { background: radial-gradient(ellipse, rgba(212,174,80,0.7) 0%, transparent 100%); }
-.hero__mist--warm  { background: radial-gradient(ellipse, rgba(184,115,51,0.65) 0%, transparent 100%); }
-.hero__mist--pale  { background: radial-gradient(ellipse, rgba(220,210,190,0.5) 0%, transparent 100%); }
-
-@keyframes mistFloat {
-  0%,100% { opacity: 0.3; transform: scaleX(0.9) translateY(0); }
-  50%      { opacity: 0.65; transform: scaleX(1.15) translateY(-6px); }
-}
-
-/* Product silhouettes (CSS-only) */
-.diff-cylinder {
-  width: 54px; height: 150px;
-  background: linear-gradient(135deg, #2C2825 0%, #111 55%, #1E1A18 100%);
-  border-radius: 3px 3px 6px 6px;
-  position: relative;
-  box-shadow: inset -5px 0 10px rgba(0,0,0,0.6), 3px 6px 28px rgba(0,0,0,0.8);
-}
-.diff-cylinder::before {
-  content: '';
-  position: absolute;
-  top: -18px; left: 50%; transform: translateX(-50%);
-  width: 16px; height: 18px;
-  background: linear-gradient(180deg, var(--brass-gleam) 0%, var(--brass-light) 30%, var(--brass) 60%, var(--brass-dark) 100%);
-  border-radius: 3px 3px 1px 1px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.2);
-}
-.diff-cylinder::after {
-  content: '';
-  position: absolute;
-  top: 28px; left: 0; right: 0; height: 3px;
-  background: linear-gradient(90deg,
-    transparent 5%, var(--brass-dark) 15%, var(--brass-light) 40%,
-    var(--brass-shine) 50%, var(--brass-light) 60%, var(--brass-dark) 85%, transparent 95%
-  );
-}
-
-.diff-dragon {
-  width: 90px; height: 120px;
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-.diff-dragon__body {
-  width: 52px; height: 76px;
-  background: linear-gradient(155deg, #3D2B1A 0%, #1E1208 70%);
-  border-radius: 30% 30% 40% 40%;
-  box-shadow: 3px 6px 20px rgba(0,0,0,0.8);
-}
-.diff-dragon__head {
-  width: 46px; height: 38px;
-  background: linear-gradient(155deg, #4A3020 0%, #2A1A0C 100%);
-  border-radius: 40% 60% 28% 28%;
-  margin-bottom: -3px;
-  position: relative;
-}
-.diff-dragon__head::before, .diff-dragon__head::after {
-  content: '';
-  position: absolute;
-  top: -10px; width: 7px; height: 11px;
-  background: linear-gradient(to top, #2A1A08, #3A2810);
-  border-radius: 2px 2px 0 0;
-}
-.diff-dragon__head::before { left: 9px; }
-.diff-dragon__head::after  { right: 10px; }
-.diff-dragon__wing-l, .diff-dragon__wing-r {
-  position: absolute; top: 38px;
-  width: 24px; height: 44px;
-}
-.diff-dragon__wing-l {
-  left: 0;
-  background: linear-gradient(120deg, #2A1A0E 0%, #1A0E06 100%);
-  border-radius: 60% 10% 20% 10%;
-  transform: rotate(-22deg) translateX(-8px);
-}
-.diff-dragon__wing-r {
-  right: 0;
-  background: linear-gradient(240deg, #2A1A0E 0%, #1A0E06 100%);
-  border-radius: 10% 60% 10% 20%;
-  transform: rotate(22deg) translateX(8px);
-}
-
-.diff-ceramic {
-  width: 62px; height: 102px;
-  background: linear-gradient(145deg, #EDE4D8 0%, #D8CCBE 35%, #C8BFB0 60%, #BEB5A5 100%);
-  border-radius: 50% 50% 40% 40% / 28% 28% 48% 48%;
-  position: relative;
-  box-shadow: inset -8px -6px 18px rgba(0,0,0,0.18), inset 4px 4px 12px rgba(255,255,255,0.22), 4px 10px 30px rgba(0,0,0,0.75);
-}
-.diff-ceramic::before {
-  content: '';
-  position: absolute;
-  top: -12px; left: 50%; transform: translateX(-50%);
-  width: 17px; height: 12px;
-  background: linear-gradient(to top, #C2B8A8, #DAD4CB);
-  border-radius: 50% 50% 20% 20%;
-}
-.diff-ceramic::after {
-  content: '';
-  position: absolute;
-  top: 16%; left: 15%; width: 30%; height: 20%;
-  border-radius: 50%;
-  background: rgba(255,255,255,0.26);
-  filter: blur(4px);
-}
-
-@media (max-width: 900px) {
-  .hero { grid-template-columns: 1fr; min-height: auto; }
-  .hero__right { min-height: 50vh; }
-  .hero__cord { display: none; }
+@media (max-width: 700px) {
+  .hero__content { margin-top: 100px; padding: 0 var(--gutter-sm); }
+  .hero::before, .hero::after { left: var(--gutter-sm); right: var(--gutter-sm); }
+  .hero__light-pool { width: 100vw; }
+  .hero__range-nav { gap: var(--space-md); }
 }
 </style>
 
-<section class="hero">
-  <div class="hero__left">
-    <div class="hero__wainscot" aria-hidden="true"></div>
-    <div class="hero__cord" aria-hidden="true"></div>
-    <div class="hero__lamp-glow" aria-hidden="true"></div>
+<section class="hero" aria-labelledby="hero-heading">
 
-    <div class="eyebrow">Est. 2025 · Australia</div>
+  <!-- Filament bulb -->
+  <div class="hero__bulb-wrap" aria-hidden="true">
+    <div class="hero__cord"></div>
+    <div class="hero__bulb"></div>
+  </div>
+
+  <!-- Light pool radiated downward -->
+  <div class="hero__light-pool" aria-hidden="true"></div>
+
+  <!-- Side wall lanterns -->
+  <div class="hero__lantern hero__lantern--left"  aria-hidden="true"></div>
+  <div class="hero__lantern hero__lantern--right" aria-hidden="true"></div>
+
+  <!-- Main content — emerges from darkness -->
+  <div class="hero__content">
+    <p class="hero__eyebrow">{{ section.settings.eyebrow | default: 'Est. 2025 · Australia' }}</p>
 
     <div class="hero__headline">
-      <h1 class="display-xl">
-        {{ section.settings.heading | default: 'Own the' }}<br>
-        <em class="brass">{{ section.settings.heading_em | default: 'atmosphere.' }}</em>
-      </h1>
+      <span class="hero__h1-top" id="hero-heading">{{ section.settings.heading | default: 'Own the' }}</span>
+      <em class="hero__h1-em">{{ section.settings.heading_em | default: 'atmosphere.' }}</em>
     </div>
 
-    <p class="italic-sub hero__sub">
-      {{ section.settings.subheading | default: 'Premium diffusers and masculine fragrances for men who understand that the right scent is the quietest power move in any room.' }}
+    <p class="hero__sub">
+      {{ section.settings.subheading | default: 'Premium diffusers for men who understand that the right scent is the quietest power move in any room.' }}
     </p>
 
     <div class="hero__btns">
-      <a href="{{ section.settings.cta_url | default: '/collections' }}" class="btn-brass">
-        {{ section.settings.cta_label | default: 'Explore the Collection' }}
+      <a href="{{ section.settings.cta_url | default: '/collections/all' }}" class="btn-brass">
+        {{ section.settings.cta_label | default: 'Enter the Bar' }}
       </a>
       {% if section.settings.secondary_url != blank %}
         <a href="{{ section.settings.secondary_url }}" class="btn-ghost">
-          {{ section.settings.secondary_label | default: 'Our Story' }}
+          {{ section.settings.secondary_label | default: 'Our Ranges' }}
         </a>
       {% endif %}
     </div>
   </div>
 
-  <div class="hero__right" aria-hidden="true">
-    <div class="hero__right-glow"></div>
-    <div class="hero__products">
-      <div class="hero__shelf-items">
-
-        <!-- Range I — Cylinder diffuser -->
-        <a href="/collections/the-elevated-man" class="hero__shelf-item" aria-label="The Elevated Man range">
-          <div class="hero__mist hero__mist--amber" style="animation-delay:0s"></div>
-          <div class="diff-cylinder"></div>
-          <span class="hero__shelf-item-label" style="color: var(--range1)">I</span>
-        </a>
-
-        <!-- Range II — Dragon diffuser -->
-        <a href="/collections/man-child" class="hero__shelf-item" style="margin-bottom: 12px;" aria-label="The Man Child range">
-          <div class="hero__mist hero__mist--warm" style="animation-delay:0.9s; width:68px"></div>
-          <div class="diff-dragon">
-            <div class="diff-dragon__wing-l"></div>
-            <div class="diff-dragon__wing-r"></div>
-            <div class="diff-dragon__head"></div>
-            <div class="diff-dragon__body"></div>
-          </div>
-          <span class="hero__shelf-item-label" style="color: var(--range2)">II</span>
-        </a>
-
-        <!-- Range III — Ceramic diffuser -->
-        <a href="/collections/happy-wife-happy-life" class="hero__shelf-item" aria-label="Happy Wife Happy Life range">
-          <div class="hero__mist hero__mist--pale" style="animation-delay:1.7s"></div>
-          <div class="diff-ceramic"></div>
-          <span class="hero__shelf-item-label" style="color: var(--range3)">III</span>
-        </a>
-
-      </div>
-      <div class="hero__shelf"></div>
+  <!-- Bar top with brass rail and range navigation -->
+  <div class="hero__bar-top" aria-hidden="true">
+    <div class="hero__bar-surface">
+      <div class="hero__bar-rail"></div>
+      <nav class="hero__range-nav" aria-label="Range navigation">
+        <a href="/collections/the-elevated-man" class="hero__range-link hero__range-link--i">I — The Elevated Man</a>
+        <a href="/collections/man-child" class="hero__range-link hero__range-link--ii">II — The Man Child</a>
+        <a href="/collections/happy-wife-happy-life" class="hero__range-link hero__range-link--iii">III — Happy Wife, Happy Life</a>
+      </nav>
     </div>
   </div>
+
 </section>
 
 {% schema %}
@@ -406,46 +392,14 @@
   "name": "Hero",
   "tag": "section",
   "settings": [
-    {
-      "type": "text",
-      "id": "heading",
-      "label": "Heading first line",
-      "default": "Own the"
-    },
-    {
-      "type": "text",
-      "id": "heading_em",
-      "label": "Heading emphasis (italic brass)",
-      "default": "atmosphere."
-    },
-    {
-      "type": "textarea",
-      "id": "subheading",
-      "label": "Subheading",
-      "default": "Premium diffusers and masculine fragrances for men who understand that the right scent is the quietest power move in any room."
-    },
-    {
-      "type": "text",
-      "id": "cta_label",
-      "label": "Primary button label",
-      "default": "Explore the Collection"
-    },
-    {
-      "type": "url",
-      "id": "cta_url",
-      "label": "Primary button URL"
-    },
-    {
-      "type": "text",
-      "id": "secondary_label",
-      "label": "Secondary button label",
-      "default": "Our Story"
-    },
-    {
-      "type": "url",
-      "id": "secondary_url",
-      "label": "Secondary button URL"
-    }
+    { "type": "text",     "id": "eyebrow",        "label": "Eyebrow",              "default": "Est. 2025 · Australia" },
+    { "type": "text",     "id": "heading",         "label": "Heading first line",   "default": "Own the" },
+    { "type": "text",     "id": "heading_em",      "label": "Heading italic amber", "default": "atmosphere." },
+    { "type": "textarea", "id": "subheading",      "label": "Subheading",           "default": "Premium diffusers for men who understand that the right scent is the quietest power move in any room." },
+    { "type": "text",     "id": "cta_label",       "label": "Primary button",       "default": "Enter the Bar" },
+    { "type": "url",      "id": "cta_url",         "label": "Primary button URL" },
+    { "type": "text",     "id": "secondary_label", "label": "Secondary button",     "default": "Our Ranges" },
+    { "type": "url",      "id": "secondary_url",   "label": "Secondary button URL" }
   ],
   "presets": [{ "name": "Hero" }]
 }
