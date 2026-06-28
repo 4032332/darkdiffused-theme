@@ -43,14 +43,6 @@
   animation: heroFilFlicker 3.5s ease-in-out 0.8s infinite;
 }
 
-.hero__bulb-photo {
-  display: block;
-  width: 220px;
-  margin: 0 auto;
-  mix-blend-mode: screen;
-  animation: heroFilFlicker 3.5s ease-in-out 0.8s infinite;
-}
-
 @keyframes heroFilFlicker {
   0%, 100% { opacity: 1;    filter: brightness(1); }
   18%       { opacity: 0.82; filter: brightness(0.88); }
@@ -272,6 +264,7 @@
   <div class="hero__bulb-wrap" aria-hidden="true">
     <svg class="hero__bulb-svg" viewBox="0 0 80 270" width="80" height="270" xmlns="http://www.w3.org/2000/svg">
       <defs>
+        <!-- Globe radial fill: white-hot centre → amber → dark edge -->
         <radialGradient id="hbg" cx="38%" cy="36%" r="58%" fx="38%" fy="36%">
           <stop offset="0%"   stop-color="#FFF9F0" stop-opacity="0.92"/>
           <stop offset="22%"  stop-color="#FFE8A8" stop-opacity="0.82"/>
@@ -279,10 +272,12 @@
           <stop offset="78%"  stop-color="#C8851A" stop-opacity="0.45"/>
           <stop offset="100%" stop-color="#8B5E10" stop-opacity="0.2"/>
         </radialGradient>
+        <!-- Specular highlight -->
         <radialGradient id="hbs" cx="28%" cy="26%" r="28%">
           <stop offset="0%"   stop-color="white" stop-opacity="0.38"/>
           <stop offset="100%" stop-color="white" stop-opacity="0"/>
         </radialGradient>
+        <!-- Knurled socket brass gradient -->
         <linearGradient id="hsg" x1="0" y1="0" x2="1" y2="0">
           <stop offset="0%"   stop-color="#4A3008"/>
           <stop offset="18%"  stop-color="#8A6018"/>
@@ -291,47 +286,63 @@
           <stop offset="78%"  stop-color="#9A7020"/>
           <stop offset="100%" stop-color="#4A3008"/>
         </linearGradient>
+        <!-- Filament wire glow blur -->
         <filter id="fg" x="-100%" y="-100%" width="300%" height="300%">
           <feGaussianBlur stdDeviation="2.8" result="b"/>
           <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
         </filter>
+        <!-- Outer bulb glow blur -->
         <filter id="og" x="-150%" y="-150%" width="400%" height="400%">
           <feGaussianBlur stdDeviation="10"/>
         </filter>
       </defs>
 
+      <!-- Outer glow halo around globe -->
       <path d="M28 112 C22 120,11 136,11 158 C11 180,22 196,40 202 C58 196,69 180,69 158 C69 136,58 120,52 112 Z"
             fill="#FF9A2E" opacity="0.22" filter="url(#og)"/>
 
-      <ellipse cx="40" cy="5" rx="14" ry="4"  fill="#1C1208" stroke="#7A5818" stroke-width="0.6"/>
-      <ellipse cx="40" cy="5" rx="10" ry="2.5" fill="none"   stroke="#5A4010" stroke-width="0.4"/>
+      <!-- Ceiling rose -->
+      <ellipse cx="40" cy="5" rx="14" ry="4"   fill="#1C1208" stroke="#7A5818" stroke-width="0.6"/>
+      <ellipse cx="40" cy="5" rx="10" ry="2.5"  fill="none"    stroke="#5A4010" stroke-width="0.4"/>
 
+      <!-- Twisted fabric cord (two interleaving sine paths) -->
       <path d="M40 9 C37 17,43 25,40 33 C37 41,43 49,40 57 C37 65,43 73,40 78"
             stroke="#3A2008" stroke-width="1.4" fill="none"/>
       <path d="M40 9 C43 17,37 25,40 33 C43 41,37 49,40 57 C43 65,37 73,40 78"
             stroke="#6A4018" stroke-width="0.6" fill="none" opacity="0.7"/>
 
+      <!-- Knurled brass socket -->
       <rect x="28" y="78" width="24" height="36" rx="1" fill="url(#hsg)"/>
+      <!-- 5 knurl shadow rings -->
       <line x1="28" y1="83"  x2="52" y2="83"  stroke="#1E1006" stroke-width="0.9" opacity="0.65"/>
       <line x1="28" y1="88"  x2="52" y2="88"  stroke="#1E1006" stroke-width="0.9" opacity="0.65"/>
       <line x1="28" y1="93"  x2="52" y2="93"  stroke="#1E1006" stroke-width="0.9" opacity="0.65"/>
       <line x1="28" y1="98"  x2="52" y2="98"  stroke="#1E1006" stroke-width="0.9" opacity="0.65"/>
       <line x1="28" y1="103" x2="52" y2="103" stroke="#1E1006" stroke-width="0.9" opacity="0.65"/>
+      <!-- Knurl highlight flashes -->
       <line x1="29" y1="82"  x2="51" y2="82"  stroke="#D4AE50" stroke-width="0.3" opacity="0.35"/>
       <line x1="29" y1="87"  x2="51" y2="87"  stroke="#D4AE50" stroke-width="0.3" opacity="0.35"/>
       <line x1="29" y1="92"  x2="51" y2="92"  stroke="#D4AE50" stroke-width="0.3" opacity="0.35"/>
       <line x1="29" y1="97"  x2="51" y2="97"  stroke="#D4AE50" stroke-width="0.3" opacity="0.35"/>
       <line x1="29" y1="102" x2="51" y2="102" stroke="#D4AE50" stroke-width="0.3" opacity="0.35"/>
+      <!-- Set screw -->
       <circle cx="52" cy="90" r="1.5" fill="#1A1008" stroke="#8A6018" stroke-width="0.4"/>
+      <line x1="50.9" y1="90" x2="53.1" y2="90" stroke="#5A4010" stroke-width="0.4"/>
 
+      <!-- Glass globe -->
       <path d="M28 112 C22 120,11 136,11 158 C11 180,22 196,40 202 C58 196,69 180,69 158 C69 136,58 120,52 112 Z"
             fill="url(#hbg)" stroke="rgba(255,220,140,0.22)" stroke-width="0.6"/>
+      <!-- Specular -->
       <path d="M28 112 C22 120,11 136,11 158 C11 180,22 196,40 202 C58 196,69 180,69 158 C69 136,58 120,52 112 Z"
             fill="url(#hbs)" stroke="none"/>
 
+      <!-- Squirrel-cage filament — animated group -->
       <g class="hero__bulb-filaments">
+        <!-- Support stems -->
         <line x1="40" y1="112" x2="40" y2="130" stroke="#9A7020" stroke-width="0.8" opacity="0.55"/>
         <line x1="40" y1="188" x2="40" y2="200" stroke="#9A7020" stroke-width="0.7" opacity="0.4"/>
+
+        <!-- Glow layer: wide amber strokes with blur -->
         <g filter="url(#fg)" opacity="0.55">
           <path d="M40 188 C40 170,21 150,21 130" stroke="#FF8020" stroke-width="5"   fill="none" stroke-linecap="round"/>
           <path d="M40 188 C40 170,26 150,26 130" stroke="#FFA030" stroke-width="4"   fill="none" stroke-linecap="round"/>
@@ -342,8 +353,11 @@
           <path d="M40 188 C40 170,49 150,49 130" stroke="#FFB840" stroke-width="4"   fill="none" stroke-linecap="round"/>
           <path d="M40 188 C40 170,54 150,54 130" stroke="#FFA030" stroke-width="4"   fill="none" stroke-linecap="round"/>
           <path d="M40 188 C40 170,59 150,59 130" stroke="#FF8020" stroke-width="5"   fill="none" stroke-linecap="round"/>
+          <!-- Top bar glow -->
           <line x1="21" y1="130" x2="59" y2="130" stroke="#FFD060" stroke-width="3" stroke-linecap="round"/>
         </g>
+
+        <!-- Crisp wire layer -->
         <g opacity="0.92">
           <path d="M40 188 C40 170,21 150,21 130" stroke="#FFFCE8" stroke-width="0.55" fill="none"/>
           <path d="M40 188 C40 170,26 150,26 130" stroke="#FFFCE8" stroke-width="0.5"  fill="none"/>
@@ -354,7 +368,9 @@
           <path d="M40 188 C40 170,49 150,49 130" stroke="#FFFCE8" stroke-width="0.5"  fill="none"/>
           <path d="M40 188 C40 170,54 150,54 130" stroke="#FFFCE8" stroke-width="0.5"  fill="none"/>
           <path d="M40 188 C40 170,59 150,59 130" stroke="#FFFCE8" stroke-width="0.55" fill="none"/>
+          <!-- Top horizontal bus bar -->
           <line x1="21" y1="130" x2="59" y2="130" stroke="#FFE890" stroke-width="0.6"/>
+          <!-- Cross wire -->
           <line x1="26" y1="162" x2="54" y2="162" stroke="#FFE890" stroke-width="0.4" opacity="0.65"/>
         </g>
       </g>
