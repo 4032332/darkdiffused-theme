@@ -6,21 +6,14 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-end;
-  padding-bottom: 12vh;
+  justify-content: center;
   overflow: hidden;
-  background-color: #060402;
-  background-image:
-    linear-gradient(180deg,
-      rgba(2,1,0,0.55) 0%,
-      rgba(4,2,1,0.35) 35%,
-      rgba(6,3,1,0.5)  70%,
-      rgba(2,1,0,0.75) 100%
-    ),
-    url({{ 'hero-bg.jpg' | asset_url }});
-  background-size: cover;
-  background-position: center center;
-  background-repeat: no-repeat;
+  background: radial-gradient(ellipse 120% 90% at 50% 0%,
+    #1A0E04 0%,
+    #0E0802 30%,
+    #060402 60%,
+    #020100 100%
+  );
 }
 
 /* ── FILAMENT BULB ── */
@@ -86,7 +79,7 @@
   text-align: center;
   padding: 0 var(--gutter);
   max-width: 880px;
-  margin-top: 0;
+  margin-top: 60px;
 }
 
 .hero__eyebrow {
@@ -251,7 +244,7 @@
 .hero__range-link--iii:hover::after { background: #C8B8A8; }
 
 @media (max-width: 700px) {
-  .hero__content { padding: 0 var(--gutter-sm); }
+  .hero__content { margin-top: 100px; padding: 0 var(--gutter-sm); }
   .hero::before, .hero::after { left: var(--gutter-sm); right: var(--gutter-sm); }
   .hero__light-pool { width: 100vw; }
   .hero__range-nav { gap: var(--space-md); }
