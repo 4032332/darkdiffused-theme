@@ -1,0 +1,68 @@
+/* ── Filament interaction system ──────────────────────────────────────────
+   Apply .filament-target to any element whose top edge should ignite on hover.
+   The parent must have position:relative and overflow:hidden.
+   The ::before pseudo-element is the glowing wire.
+────────────────────────────────────────────────────────────────────────── */
+
+@keyframes filament-ignite {
+  0%   { transform: scaleX(0); opacity: 0; }
+  12%  { opacity: 1; }
+  100% { transform: scaleX(1); opacity: 1; }
+}
+
+@keyframes filament-flicker {
+  0%, 100% { opacity: 1;    filter: brightness(1); }
+  18%       { opacity: 0.82; filter: brightness(0.88); }
+  35%       { opacity: 1;    filter: brightness(1.06); }
+  60%       { opacity: 0.9;  filter: brightness(0.94); }
+  78%       { opacity: 1;    filter: brightness(1.02); }
+}
+
+/* White-hot core, orange mid, deep amber at edges */
+.filament-target {
+  position: relative;
+  overflow: hidden;
+}
+
+.filament-target::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  transform: scaleX(0);
+  transform-origin: center;
+  background: linear-gradient(90deg,
+    transparent                   0%,
+    rgba(180, 80, 10, 0.4)        6%,
+    rgba(255, 120, 20, 0.8)      18%,
+    rgba(255, 200, 80, 1)        30%,
+    rgba(255, 245, 220, 1)       44%,
+    rgba(255, 255, 255, 1)       50%,
+    rgba(255, 245, 220, 1)       56%,
+    rgba(255, 200, 80, 1)        70%,
+    rgba(255, 120, 20, 0.8)      82%,
+    rgba(180, 80, 10, 0.4)       94%,
+    transparent                  100%
+  );
+  box-shadow:
+    0 0 1px  rgba(255, 255, 255, 1),
+    0 0 4px  rgba(255, 255, 200, 0.9),
+    0 0 10px rgba(255, 140, 30, 0.7),
+    0 0 24px rgba(220, 90, 10, 0.45),
+    0 0 48px rgba(160, 50, 5, 0.2);
+  pointer-events: none;
+  opacity: 0;
+}
+
+.filament-target:hover::before {
+  animation:
+    filament-ignite  0.5s cubic-bezier(0.2, 0, 0.4, 1) forwards,
+    filament-flicker 3.2s ease-in-out 0.5s infinite;
+}
+
+/* Permanent variant — always burning, used on cart drawer header */
+.filament-permanent::before {
+  animation:
+    filament-ignite  0.6s cubic-bezier(0.2, 0, 0.4, 1) forwards,
+    filament-flicker 3.5s ease-in-out 0.6s infinite;
+}

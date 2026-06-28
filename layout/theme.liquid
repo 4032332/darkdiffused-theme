@@ -30,6 +30,8 @@
   {{ content_for_header }}
 
   {{ 'base.css' | asset_url | stylesheet_tag }}
+  {{ 'filament.css' | asset_url | stylesheet_tag }}
+  {{ 'cart-drawer.css' | asset_url | stylesheet_tag }}
 </head>
 
 <body class="{% if customer %}customer-logged-in{% endif %} template-{{ template.name | handle }}">
@@ -45,7 +47,9 @@
 
   {% section 'footer' %}
 
+  {% render 'cart-drawer', cart: cart %}
   {{ 'theme.js' | asset_url | script_tag }}
   <script src="{{ 'smoke.js' | asset_url }}" defer></script>
+  <script src="{{ 'cart-drawer.js' | asset_url }}" defer></script>
 </body>
 </html>

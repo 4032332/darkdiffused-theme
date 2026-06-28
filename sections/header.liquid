@@ -339,11 +339,11 @@
 
     <nav class="site-nav" aria-label="Main navigation">
       <div class="site-nav__item">
-        <a href="/" {% if request.path == '/' %}class="active" aria-current="page"{% endif %}>Home</a>
+        <a href="/" class="filament-target{% if request.path == '/' %} active{% endif %}"{% if request.path == '/' %} aria-current="page"{% endif %}>Home</a>
       </div>
 
       <div class="site-nav__item" id="collections-nav-item">
-        <button class="site-nav__trigger" aria-expanded="false" aria-controls="collections-dropdown">
+        <button class="site-nav__trigger filament-target" aria-expanded="false" aria-controls="collections-dropdown">
           Collections
           <span class="site-nav__chevron" aria-hidden="true"></span>
         </button>
@@ -365,7 +365,7 @@
       </div>
 
       <div class="site-nav__item">
-        <a href="/pages/our-scents">Our Scents</a>
+        <a href="/pages/our-scents" class="filament-target">Our Scents</a>
       </div>
 
       <div class="site-nav__item">
@@ -382,7 +382,7 @@
         </a>
       {% endif %}
 
-      <a href="/cart" class="header-cart" aria-label="Cart — {{ cart.item_count }} items">
+      <a href="/cart" class="header-cart filament-target" data-cart-trigger aria-label="Cart — {{ cart.item_count }} items">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
           <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
           <line x1="3" y1="6" x2="21" y2="6"/>
