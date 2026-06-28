@@ -8,45 +8,12 @@
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  background-color: #060402;
-  background-image:
-    repeating-linear-gradient(
-      90.5deg,
-      transparent 0px, transparent 8px,
-      rgba(60,35,10,0.08) 8px, rgba(60,35,10,0.08) 9px
-    ),
-    repeating-linear-gradient(
-      89.2deg,
-      transparent 0px, transparent 28px,
-      rgba(40,22,6,0.12) 28px, rgba(40,22,6,0.12) 29px
-    ),
-    linear-gradient(180deg,
-      #060402 0%,
-      #0E0804 20%,
-      #100A04 55%,
-      #0A0602 80%,
-      #060402 100%
-    );
-}
-
-/* Wainscoting — dark walnut panels on left and right walls */
-.hero::before {
-  content: '';
-  position: absolute;
-  top: var(--space-xl); bottom: 80px;
-  left: var(--gutter); right: var(--gutter);
-  border: 1px solid rgba(200,133,26,0.08);
-  pointer-events: none;
-  z-index: 2;
-}
-.hero::after {
-  content: '';
-  position: absolute;
-  top: calc(var(--space-xl) + 10px); bottom: 90px;
-  left: calc(var(--gutter) + 10px); right: calc(var(--gutter) + 10px);
-  border: 1px solid rgba(200,133,26,0.04);
-  pointer-events: none;
-  z-index: 2;
+  background: radial-gradient(ellipse 120% 90% at 50% 0%,
+    #1A0E04 0%,
+    #0E0802 30%,
+    #060402 60%,
+    #020100 100%
+  );
 }
 
 /* ── FILAMENT BULB ── */

@@ -213,48 +213,17 @@ em.brass, .brass-em {
   padding: var(--space-lg) 0;
 }
 
-/* ── WOOD TEXTURE BACKGROUNDS ── */
+/* ── SECTION BACKGROUNDS ── */
 .bg-wood {
-  background-color: var(--wood-dark);
-  background-image:
-    repeating-linear-gradient(
-      90.8deg,
-      transparent 0px, transparent 5px,
-      rgba(60,30,8,0.12) 5px, rgba(60,30,8,0.12) 6px
-    ),
-    repeating-linear-gradient(
-      89.5deg,
-      transparent 0px, transparent 18px,
-      rgba(40,20,5,0.1) 18px, rgba(40,20,5,0.1) 19px
-    ),
-    linear-gradient(180deg, #120C04 0%, #0E0A04 100%);
+  background: linear-gradient(180deg, #120C04 0%, #0A0702 100%);
 }
 
 .bg-leather {
-  background-color: var(--leather-dark);
-  background-image:
-    repeating-linear-gradient(
-      43deg,
-      transparent 0px, transparent 7px,
-      rgba(180,100,40,0.03) 7px, rgba(180,100,40,0.03) 8px
-    ),
-    repeating-linear-gradient(
-      -43deg,
-      transparent 0px, transparent 7px,
-      rgba(80,30,5,0.05) 7px, rgba(80,30,5,0.05) 8px
-    ),
-    linear-gradient(160deg, #241408 0%, #160E06 100%);
+  background: linear-gradient(160deg, #1E1006 0%, #120A04 100%);
 }
 
 .bg-panel {
-  background-color: var(--panel);
-  background-image:
-    repeating-linear-gradient(
-      90.5deg,
-      transparent 0px, transparent 6px,
-      rgba(50,25,5,0.1) 6px, rgba(50,25,5,0.1) 7px
-    ),
-    linear-gradient(160deg, #1C1208 0%, #141008 100%);
+  background: linear-gradient(180deg, #141008 0%, #0C0906 100%);
 }
 
 /* ── BRASS RULES / DIVIDERS ── */
