@@ -256,7 +256,9 @@
 
   <div class="product-grid product-grid--3">
     {% for product in collection.products %}
-      {% render 'product-card', product: product %}
+      {% assign featured = false %}
+      {% if forloop.first %}{% assign featured = true %}{% endif %}
+      {% render 'product-card', product: product, featured: featured %}
     {% else %}
       <p style="color: var(--fog); font-style: italic; grid-column: 1/-1; padding: var(--space-xl) 0; text-align: center;">No products in this collection yet.</p>
     {% endfor %}

@@ -370,6 +370,7 @@ em.brass, .brass-em {
   overflow: hidden;
   position: relative;
   background: linear-gradient(160deg, #1A1208, #0E0A04);
+  display: block;
 }
 
 .product-card__image {
@@ -445,26 +446,56 @@ em.brass, .brass-em {
   color: var(--cream);
 }
 
-.product-card__add {
-  width: 36px;
-  height: 36px;
-  border: 1px solid var(--brass-dark);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--brass-light);
-  font-size: 20px;
-  line-height: 1;
-  background: transparent;
-  transition: all 0.3s ease;
+/* Range badge overlaid on image */
+.product-card__range-badge {
+  position: absolute;
+  top: 14px; left: 14px;
+  font-size: 8px; letter-spacing: 0.2em; text-transform: uppercase;
+  padding: 4px 10px;
+  border: 1px solid;
+  background: rgba(6, 4, 2, 0.7);
   font-family: var(--font-ui);
-  font-weight: 300;
+  pointer-events: none;
+  z-index: 2;
 }
 
-.product-card__add:hover {
-  background: linear-gradient(180deg, var(--brass-light), var(--brass-dark));
-  color: var(--near-black);
-  border-color: var(--brass);
+/* Quick-add overlay — slides up on card hover, filament ignites */
+.product-card__quick-add {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  padding: 13px 16px;
+  background: rgba(6, 4, 2, 0.85);
+  border: none; border-top: 1px solid rgba(212, 174, 80, 0.15);
+  color: #C8A030;
+  font-family: var(--font-ui);
+  font-size: 9px; letter-spacing: 0.22em; text-transform: uppercase;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity 0.3s ease, transform 0.3s ease, color 0.2s;
+  backdrop-filter: blur(8px);
+  z-index: 3;
+}
+.product-card:hover .product-card__quick-add {
+  opacity: 1;
+  transform: translateY(0);
+  color: #D4AE50;
+}
+.product-card__quick-add:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Featured card — spans 2 columns, wider image aspect ratio */
+.product-card--featured {
+  grid-column: span 2;
+}
+.product-card--featured .product-card__image-wrap {
+  aspect-ratio: 16 / 9;
+}
+.product-card--featured .product-card__name {
+  font-size: 22px;
 }
 
 /* Range colour modifiers */
