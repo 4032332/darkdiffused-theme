@@ -1,0 +1,118 @@
+<div class="cart-overlay" id="cart-overlay" aria-hidden="true"></div>
+
+<div class="cart-drawer filament-permanent" id="cart-drawer" role="dialog" aria-modal="true" aria-label="Your bag" hidden>
+
+  <div class="cart-drawer__header">
+    <div class="cart-drawer__header-top">
+      <span class="cart-drawer__eyebrow">The Bag</span>
+      <button class="cart-drawer__close" id="cart-drawer-close" aria-label="Close cart">&#x2715;</button>
+    </div>
+    <div class="cart-drawer__title">Your Selection</div>
+    <div class="cart-drawer__meta" id="cart-drawer-meta">
+      {{ cart.item_count }} {% if cart.item_count == 1 %}item{% else %}items{% endif %}
+    </div>
+  </div>
+
+  <div class="cart-drawer__items" id="cart-drawer-items">
+    {% if cart.item_count == 0 %}
+      <div class="cart-drawer__empty">
+        <div class="cart-drawer__empty-rule"></div>
+        <p class="cart-drawer__empty-text">Your bag is empty.</p>
+        <a href="/collections/all" class="cart-drawer__empty-link">Explore the ranges &#x2192;</a>
+      </div>
+    {% else %}
+      {% for item in cart.items %}
+        <div class="cart-item" data-key="{{ item.key | escape }}">
+          <a href="{{ item.url | escape }}" class="cart-item__img-wrap" tabindex="-1">
+            {% if item.image %}
+              <img
+                class="cart-item__img"
+                src="{{ item.image | image_url: width: 160 }}"
+                alt="{{ item.image.alt | escape | default: item.title }}"
+                width="80" height="100" loading="lazy"
+              >
+            {% else %}
+              <div class="cart-item__img-placeholder">
+                <span>{{ item.title | slice: 0 }}</span>
+              </div>
+            {% endif %}
+          </a>
+
+          <div class="cart-item__details">
+            <span class="cart-item__type">{{ item.product.type | escape }}</span>
+            <a href="{{ item.url | escape }}" class="cart-item__name">{{ item.product.title | escape }}</a>
+            {% if item.variant.title != 'Default Title' %}
+              <span class="cart-item__variant">{{ item.variant.title | escape }}</span>
+            {% endif %}
+            <div class="cart-item__qty" data-key="{{ item.key | escape }}">
+              <button class="cart-item__qty-btn" data-action="decrement" aria-label="Decrease quantity">&#x2212;</button>
+              <span class="cart-item__qty-val">{{ item.quantity }}</span>
+              <button class="cart-item__qty-btn" data-action="increment" aria-label="Increase quantity">&#x2B;</button>
+            </div>
+          </div>
+
+          <div class="cart-item__right">
+            <span class="cart-item__price">{{ item.final_line_price | money }}</span>
+            <button class="cart-item__remove" data-key="{{ item.key | escape }}" aria-label="Remove {{ item.title | escape }}">Remove</button>
+          </div>
+        </div>
+      {% endfor %}
+    {% endif %}
+  </div>
+
+  <div class="cart-drawer__note-section">
+    <button class="cart-drawer__note-toggle" id="cart-note-toggle" aria-expanded="false">
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" id="cart-note-icon">
+        <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+      </svg>
+      Add a note to your order
+    </button>
+    <textarea
+      class="cart-drawer__note-input"
+      id="cart-note-input"
+      rows="2"
+      placeholder="Any special instructions&#x2026;"
+      aria-label="Order note"
+      hidden
+    >{{ cart.note | escape }}</textarea>
+  </div>
+
+  <div class="cart-drawer__footer">
+    <div class="cart-drawer__subtotal-row">
+      <span class="cart-drawer__subtotal-label">Subtotal</span>
+      <span class="cart-drawer__subtotal-amount" id="cart-drawer-total">{{ cart.total_price | money }}</span>
+    </div>
+    {% if cart.total_price >= 8000 %}
+      <p class="cart-drawer__shipping-note">Free shipping applied &#x2713;</p>
+    {% else %}
+      {% assign remaining = 8000 | minus: cart.total_price %}
+      <p class="cart-drawer__shipping-note">{{ remaining | money }} away from free shipping</p>
+    {% endif %}
+
+    <a href="/checkout" class="btn-brass filament-target cart-drawer__checkout">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+        <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
+        <line x1="3" y1="6" x2="21" y2="6"/>
+        <path d="M16 10a4 4 0 01-8 0"/>
+      </svg>
+      Proceed to Checkout
+    </a>
+    <button class="cart-drawer__continue" id="cart-drawer-continue">&#x2190; Continue Shopping</button>
+
+    <div class="cart-drawer__trust">
+      <span class="cart-drawer__trust-item">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        Secure checkout
+      </span>
+      <span class="cart-drawer__trust-item">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+        All major cards
+      </span>
+      <span class="cart-drawer__trust-item">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        AU shipping
+      </span>
+    </div>
+  </div>
+
+</div>
