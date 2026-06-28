@@ -11,17 +11,24 @@
   padding: var(--space-lg) var(--space-lg);
   cursor: pointer;
   position: relative;
-  transition: background 0.4s ease;
+  transition: background-color 0.4s ease;
   border-right: 1px solid rgba(212,174,80,0.1);
   text-decoration: none;
   display: block;
-  background: linear-gradient(160deg, #1A1008 0%, #0E0904 100%);
+  background-color: #0E0A04;
+  background-image:
+    linear-gradient(160deg, rgba(20,10,4,0.7) 0%, rgba(8,5,2,0.75) 100%),
+    url({{ 'wood-texture.jpg' | asset_url }});
+  background-size: cover;
+  background-position: center;
 }
 
 .range-card:last-child { border-right: none; }
 
 .range-card:hover {
-  background: linear-gradient(160deg, #221408 0%, #160A04 100%);
+  background-image:
+    linear-gradient(160deg, rgba(28,14,5,0.6) 0%, rgba(14,8,3,0.65) 100%),
+    url({{ 'wood-texture.jpg' | asset_url }});
 }
 
 /* Brass accent bar at top, reveals on hover */

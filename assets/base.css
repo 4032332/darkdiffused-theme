@@ -215,15 +215,30 @@ em.brass, .brass-em {
 
 /* ── SECTION BACKGROUNDS ── */
 .bg-wood {
-  background: linear-gradient(180deg, #120C04 0%, #0A0702 100%);
+  background-color: #0E0A04;
+  background-image:
+    linear-gradient(180deg, rgba(6,3,1,0.72) 0%, rgba(8,5,2,0.68) 100%),
+    url({{ 'wood-texture.jpg' | asset_url }});
+  background-size: cover;
+  background-position: center;
 }
 
 .bg-leather {
-  background: linear-gradient(160deg, #1E1006 0%, #120A04 100%);
+  background-color: #120A04;
+  background-image:
+    linear-gradient(160deg, rgba(4,2,1,0.65) 0%, rgba(8,4,2,0.7) 100%),
+    url({{ 'leather-texture.jpg' | asset_url }});
+  background-size: cover;
+  background-position: center;
 }
 
 .bg-panel {
-  background: linear-gradient(180deg, #141008 0%, #0C0906 100%);
+  background-color: #0E0A04;
+  background-image:
+    linear-gradient(180deg, rgba(6,3,1,0.75) 0%, rgba(4,2,1,0.8) 100%),
+    url({{ 'wood-texture.jpg' | asset_url }});
+  background-size: cover;
+  background-position: center;
 }
 
 /* ── BRASS RULES / DIVIDERS ── */
