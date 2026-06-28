@@ -6,7 +6,8 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-end;
+  padding-bottom: 12vh;
   overflow: hidden;
   background-color: #060402;
   background-image:
@@ -85,7 +86,7 @@
   text-align: center;
   padding: 0 var(--gutter);
   max-width: 880px;
-  margin-top: 180px;
+  margin-top: 0;
 }
 
 .hero__eyebrow {
@@ -250,7 +251,7 @@
 .hero__range-link--iii:hover::after { background: #C8B8A8; }
 
 @media (max-width: 700px) {
-  .hero__content { margin-top: 140px; padding: 0 var(--gutter-sm); }
+  .hero__content { padding: 0 var(--gutter-sm); }
   .hero::before, .hero::after { left: var(--gutter-sm); right: var(--gutter-sm); }
   .hero__light-pool { width: 100vw; }
   .hero__range-nav { gap: var(--space-md); }
