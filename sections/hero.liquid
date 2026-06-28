@@ -43,6 +43,14 @@
   animation: heroFilFlicker 3.5s ease-in-out 0.8s infinite;
 }
 
+.hero__bulb-photo {
+  display: block;
+  width: 220px;
+  margin: 0 auto;
+  mix-blend-mode: screen;
+  animation: heroFilFlicker 3.5s ease-in-out 0.8s infinite;
+}
+
 @keyframes heroFilFlicker {
   0%, 100% { opacity: 1;    filter: brightness(1); }
   18%       { opacity: 0.82; filter: brightness(0.88); }
@@ -260,8 +268,12 @@
 
 <section class="hero" aria-labelledby="hero-heading">
 
-  <!-- Edison filament bulb — SVG -->
+  <!-- Edison filament bulb — photo -->
   <div class="hero__bulb-wrap" aria-hidden="true">
+    <img class="hero__bulb-photo" src="{{ 'bulb.png' | asset_url }}" alt="" width="220">
+  </div>
+  <!-- SVG fallback (hidden) -->
+  <div style="display:none" aria-hidden="true">
     <svg class="hero__bulb-svg" viewBox="0 0 80 270" width="80" height="270" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <radialGradient id="hbg" cx="38%" cy="36%" r="58%" fx="38%" fy="36%">
@@ -351,7 +363,7 @@
         </g>
       </g>
     </svg>
-  </div>
+  </div><!-- end SVG fallback -->
 
   <!-- Light pool radiated downward -->
   <div class="hero__light-pool" aria-hidden="true"></div>
