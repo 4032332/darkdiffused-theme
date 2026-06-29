@@ -1157,15 +1157,43 @@ em.brass, .brass-em {
     0 0 0 1px color-mix(in srgb, var(--range-accent) 20%, transparent);
 }
 
-/* Second image reveal on hover */
+/* Second image reveal on hover — only when a hover image actually exists */
 .product-card__image--hover {
   position: absolute;
   inset: 0;
   opacity: 0;
   transition: opacity 0.5s ease;
 }
-.product-card:hover .product-card__image--hover { opacity: 1; }
-.product-card:hover .product-card__image:not(.product-card__image--hover) { opacity: 0; }
+.product-card:has(.product-card__image--hover):hover .product-card__image--hover { opacity: 1; }
+.product-card:has(.product-card__image--hover):hover .product-card__image:not(.product-card__image--hover) { opacity: 0; }
+
+/* Brass filament sweep on hover */
+.product-card__image-wrap::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    #8B6914 8%,
+    #C8851A 20%,
+    #F0D080 38%,
+    #E8CC78 50%,
+    #F0D080 62%,
+    #C8851A 80%,
+    #8B6914 92%,
+    transparent 100%
+  );
+  box-shadow: 0 0 12px 2px rgba(255, 154, 46, 0.55), 0 0 30px 4px rgba(200, 133, 26, 0.25);
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.product-card:hover .product-card__image-wrap::after {
+  transform: scaleX(1);
+}
 
 /* Card name link */
 .product-card__name-link { text-decoration: none; }
