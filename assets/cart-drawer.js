@@ -223,6 +223,21 @@
     return '$' + (cents / 100).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
   }
 
+  /* ── Public API ───────────────────────────────────────────────────────── */
+  window.CartDrawer = {
+    open: openDrawer,
+    close: closeDrawer,
+    addAndOpen: function (variantId, quantity) {
+      return fetch('/cart/add.js', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({ id: variantId, quantity: quantity || 1 })
+      })
+        .then(function (r) { return r.json(); })
+        .then(function () { openDrawer(); });
+    }
+  };
+
   /* ── Init ─────────────────────────────────────────────────────────────── */
   document.addEventListener('DOMContentLoaded', function () {
     drawer      = document.getElementById('cart-drawer');

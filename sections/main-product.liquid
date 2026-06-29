@@ -568,7 +568,7 @@
   <div class="sticky-atc__inner">
     <span class="sticky-atc__title">{{ product.title }}</span>
     <span class="sticky-atc__price" id="sticky-price">{{ current_variant.price | money }}</span>
-    <button class="sticky-atc__btn" onclick="document.getElementById('product-form').dispatchEvent(new Event('submit'))">
+    <button class="sticky-atc__btn">
       Add to Bag
     </button>
   </div>
@@ -597,6 +597,32 @@
       btn.classList.add('active');
     });
   }
+
+  // Product form → cart drawer (no page reload)
+  const productForm = document.getElementById('product-form');
+  if (productForm) {
+    productForm.addEventListener('submit', function (e) {
+      e.preventDefault();
+      const variantId = parseInt(document.getElementById('variant-id').value, 10);
+      const qty = parseInt(document.getElementById('qty-input').value, 10) || 1;
+      const btn = document.getElementById('atc-btn');
+      if (btn) btn.disabled = true;
+      if (window.CartDrawer) {
+        window.CartDrawer.addAndOpen(variantId, qty).finally(function () {
+          if (btn) btn.disabled = false;
+        });
+      } else {
+        productForm.submit();
+      }
+    });
+  }
+
+  // Sticky ATC button
+  document.querySelector('.sticky-atc__btn') && document.querySelector('.sticky-atc__btn').addEventListener('click', function () {
+    const variantId = parseInt(document.getElementById('variant-id').value, 10);
+    const qty = parseInt(document.getElementById('qty-input').value, 10) || 1;
+    if (window.CartDrawer) window.CartDrawer.addAndOpen(variantId, qty);
+  });
 
   // Variant selection
   const variantData = {{ product.variants | json }};
