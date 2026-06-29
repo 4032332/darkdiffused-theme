@@ -1,0 +1,271 @@
+<style>
+.page-hero {
+  min-height: 42vh;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  text-align: center;
+  padding: var(--space-2xl) var(--gutter) var(--space-xl);
+  position: relative;
+  overflow: hidden;
+  background-color: #060402;
+  background-image:
+    linear-gradient(180deg,
+      rgba(2,1,0,0.72) 0%,
+      rgba(4,2,1,0.50) 40%,
+      rgba(2,1,0,0.80) 100%
+    ),
+    url({{ 'hero-bg.jpg' | asset_url }});
+  background-size: cover;
+  background-position: center 30%;
+}
+
+.page-hero__eyebrow {
+  font-family: var(--font-ui);
+  font-size: 9px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--brass-mid, #8A6828);
+  margin-bottom: var(--space-sm);
+}
+
+.page-hero__title {
+  font-family: var(--font-display);
+  font-size: clamp(42px, 7vw, 96px);
+  font-weight: 700;
+  color: #D4B896;
+  line-height: 1.05;
+  margin: 0;
+}
+
+.page-hero__title em {
+  font-style: italic;
+  color: var(--brass, #C8851A);
+}
+
+/* Brass rail divider */
+.page-rail {
+  height: 5px;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    #8B6914 5%,
+    #C8851A 15%,
+    #E8CC78 28%,
+    #D4AE50 38%,
+    #C8851A 50%,
+    #E8CC78 62%,
+    #D4AE50 72%,
+    #C8851A 85%,
+    #8B6914 95%,
+    transparent 100%
+  );
+  box-shadow: 0 0 18px rgba(255,154,46,0.3);
+}
+
+/* Story body */
+.page-body {
+  max-width: 780px;
+  margin: 0 auto;
+  padding: var(--space-2xl) var(--gutter);
+}
+
+.page-body__section {
+  margin-bottom: var(--space-2xl);
+}
+
+.page-body__section:last-child {
+  margin-bottom: 0;
+}
+
+.page-body__label {
+  font-family: var(--font-ui);
+  font-size: 9px;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--brass, #C8851A);
+  display: block;
+  margin-bottom: var(--space-sm);
+}
+
+.page-body__heading {
+  font-family: var(--font-display);
+  font-size: clamp(26px, 3.5vw, 40px);
+  font-weight: 700;
+  color: var(--cream, #F0E8D8);
+  line-height: 1.15;
+  margin-bottom: var(--space-md);
+}
+
+.page-body__heading em {
+  font-style: italic;
+  color: var(--brass, #C8851A);
+}
+
+.page-body__text {
+  font-family: var(--font-body, 'EB Garamond', serif);
+  font-size: clamp(17px, 1.6vw, 20px);
+  line-height: 1.75;
+  color: var(--stone, #8A7A6A);
+  margin-bottom: var(--space-md);
+}
+
+.page-body__text:last-child {
+  margin-bottom: 0;
+}
+
+/* Pull quote */
+.page-pull-quote {
+  border-left: 3px solid var(--brass, #C8851A);
+  padding: var(--space-md) var(--space-lg);
+  margin: var(--space-xl) 0;
+  background: rgba(200,133,26,0.05);
+}
+
+.page-pull-quote p {
+  font-family: var(--font-display);
+  font-size: clamp(20px, 2.5vw, 28px);
+  font-style: italic;
+  color: var(--cream, #F0E8D8);
+  line-height: 1.4;
+  margin: 0;
+}
+
+/* Three pillars */
+.page-pillars {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-lg);
+  margin: var(--space-2xl) 0;
+  padding: var(--space-xl) 0;
+  border-top: 1px solid rgba(200,133,26,0.12);
+  border-bottom: 1px solid rgba(200,133,26,0.12);
+}
+
+.page-pillar__label {
+  font-family: var(--font-ui);
+  font-size: 9px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--brass, #C8851A);
+  display: block;
+  margin-bottom: 10px;
+}
+
+.page-pillar__heading {
+  font-family: var(--font-display);
+  font-size: clamp(18px, 2vw, 22px);
+  font-weight: 700;
+  color: var(--cream, #F0E8D8);
+  margin-bottom: 8px;
+}
+
+.page-pillar__text {
+  font-size: 14px;
+  color: var(--stone, #8A7A6A);
+  line-height: 1.65;
+}
+
+/* CTA strip */
+.page-cta {
+  text-align: center;
+  padding: var(--space-2xl) var(--gutter);
+  background: linear-gradient(180deg, transparent 0%, rgba(200,133,26,0.04) 50%, transparent 100%);
+}
+
+.page-cta__heading {
+  font-family: var(--font-display);
+  font-size: clamp(28px, 4vw, 48px);
+  font-weight: 700;
+  color: var(--cream, #F0E8D8);
+  margin-bottom: var(--space-md);
+}
+
+.page-cta__heading em {
+  font-style: italic;
+  color: var(--brass, #C8851A);
+}
+
+@media (max-width: 700px) {
+  .page-pillars { grid-template-columns: 1fr; gap: var(--space-md); }
+  .page-body { padding: var(--space-xl) var(--gutter-sm); }
+}
+</style>
+
+<!-- Hero -->
+<div class="page-hero">
+  <div>
+    <p class="page-hero__eyebrow">Dark &amp; Diffused · Est. 2025 · Australia</p>
+    <h1 class="page-hero__title">The Story Behind<br><em>the atmosphere.</em></h1>
+  </div>
+</div>
+
+<div class="page-rail"></div>
+
+<!-- Body -->
+<div class="page-body">
+
+  <div class="page-body__section">
+    <span class="page-body__label">The Problem</span>
+    <h2 class="page-body__heading">The market forgot <em>the man.</em></h2>
+    <p class="page-body__text">
+      Scent is one of the most powerful forces a human being has access to. It rewires your mood before you've even noticed it happened. It pulls memories out of thin air. It changes the energy of a room, shifts the attention of everyone who walks into it, and quietly signals exactly who you are — without you saying a word.
+    </p>
+    <p class="page-body__text">
+      Men know this. Increasingly, men care deeply about the spaces they inhabit — the way a room feels, the way it looks, the way it smells. But when it came to diffusers, the market had one answer: flowers, pastels, and apology.
+    </p>
+    <p class="page-body__text">
+      Nothing built for the man who wants oud and cedarwood. Nothing designed for a desk that means business. Nothing that looks like it belongs next to a glass of whisky.
+    </p>
+  </div>
+
+  <div class="page-pull-quote">
+    <p>"I wanted a product I couldn't find anywhere. So I built the place to find it."</p>
+  </div>
+
+  <div class="page-body__section">
+    <span class="page-body__label">The Mission</span>
+    <h2 class="page-body__heading">Atmosphere is not <em>an accident.</em></h2>
+    <p class="page-body__text">
+      Dark &amp; Diffused exists for men who curate their environments with the same precision they apply to everything else. The ones who understand that the details — the lighting, the texture, the scent drifting across the room — are not afterthoughts. They are the statement.
+    </p>
+    <p class="page-body__text">
+      Every diffuser we carry was chosen because it does something. The steam that curls and shifts like smoke from a fire. The glow that changes the temperature of a room. The scent that makes people stop and ask what that is. We're not selling air fresheners. We're selling the tools to own your atmosphere.
+    </p>
+  </div>
+
+</div>
+
+<!-- Three pillars -->
+<div style="max-width: 1080px; margin: 0 auto; padding: 0 var(--gutter);">
+  <div class="page-pillars">
+    <div class="page-pillar">
+      <span class="page-pillar__label">Sensory</span>
+      <div class="page-pillar__heading">Steam. Glow. Scent.</div>
+      <p class="page-pillar__text">Three layers working at once. The visual theatre of vapour in motion. The warmth of ambient light. And the scent that does the heavy lifting on mood and memory.</p>
+    </div>
+    <div class="page-pillar">
+      <span class="page-pillar__label">Masculine</span>
+      <div class="page-pillar__heading">Built for men.</div>
+      <p class="page-pillar__text">Dark finishes. Industrial forms. Scents that command — not apologise. Every product chosen because it looks right in a man's space and performs the way a man expects.</p>
+    </div>
+    <div class="page-pillar">
+      <span class="page-pillar__label">Deliberate</span>
+      <div class="page-pillar__heading">Chosen with intent.</div>
+      <p class="page-pillar__text">We don't carry everything. We carry what earns its place. Each diffuser, each scent — selected because it raises the bar on what a room can feel like.</p>
+    </div>
+  </div>
+</div>
+
+<!-- CTA -->
+<div class="page-cta">
+  <h2 class="page-cta__heading">Ready to own <em>the room?</em></h2>
+  <a href="/collections/all" class="btn-brass" style="margin-top: var(--space-md); display: inline-flex;">Enter the Bar</a>
+</div>
+
+{% schema %}
+{
+  "name": "Page — Story",
+  "settings": [],
+  "presets": [{ "name": "Page Story" }]
+}
+{% endschema %}
